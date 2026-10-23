@@ -40,4 +40,3 @@ O roteamento do próprio original é advisoryOnly/changesHostModel:false; não s
 As diferenças intencionais incluem projeto explícito, tarefas fora do namespace de memória, revisão em mutações, retirada reversível por padrão e purge com snapshot. Não há compatibilidade drop-in dos argumentos. A base privada do app anterior não é distribuída.
 
 Limites e procedimentos: [GAP-CLOSURE.md](GAP-CLOSURE.md). O catálogo JSON real é [mcp-tools.json](mcp-tools.json).
-

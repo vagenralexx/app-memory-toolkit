@@ -1,7 +1,7 @@
 # Instalar e começar pelo agente
 
 Repositório: https://github.com/vagenralexx/app-memory-toolkit
-Versão de avaliação: 1.0.0-rc.4. Node.js 24+, npm e Git. O repositório está privado enquanto a licença não é decidida; o instalador precisa de acesso à conta/repositório. Não informe tokens na conversa.
+Versão de avaliação: 1.0.0-rc.4. Node.js 24+, npm e Git. A licença ainda não foi decidida. Confira a visibilidade e as permissões do repositório antes de distribuir ou instalar. Não informe tokens na conversa.
 
 ## Pedido pronto para copiar
 
