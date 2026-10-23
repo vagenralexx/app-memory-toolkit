@@ -1,11 +1,10 @@
 # Base real consultada e adaptação
 
-## Evolução até 1.0.0-rc.2
+## Evolução até1.0.0-rc.3
 
-A tabela ao final preserva o retrato histórico da adaptação 0.2.0. Na candidata 1.0, foram entregues busca híbrida local, reranking, chunks, AST sintático de JS/TS, cache por revisão, relações explícitas, contexto de módulos/dependências, propostas e validação de patches, backup/portabilidade e instalador de conexões. O catálogo vigente é MCP_TOOLS.md.
+A matriz vigente está em [CAPABILITIES.md](CAPABILITIES.md), cobrindo as 28 capacidades observadas. O catálogo do produto tem62 ferramentas. A tabela0.2 ao final é apenas histórico e não descreve as ausências atuais.
 
-As ferramentas de arquitetura e drift são limitadas: a primeira traz decisões relacionadas para revisão, a segunda compara hashes; nenhuma faz prova semântica automática. A aplicação de patches fica na CLI explícita e exclui ADRs/regras. O auditor agêntico especializado, resolvedor completo de tipos e dispatcher de modelos do original não foram copiados.
-
+Foram acrescentados busca híbrida, TypeChecker local, Python parcial, corpus UI/React, roteamento consultivo configurável, auditoria estática de superfície, ciclo de feedback de memória, cache de respostas por sessão e reconciliação orientada a evidências. Limites explícitos estão em [GAP-CLOSURE.md](GAP-CLOSURE.md).
 
 ## Evidências em 23/10/2026
 

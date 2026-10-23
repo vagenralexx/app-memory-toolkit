@@ -10,6 +10,11 @@ import { analyzeDrift, proposePatch, validatePatch } from './reconciliation.js';
 import { writeExport, importProject, backupStore } from './portability.js';
 import { doctor } from './doctor.js';
 import { getRules } from './policy.js';
+import { designGuidance } from './design-corpus.js';
+import { architectureConflicts } from './architecture.js';
+import { documentDrift } from './document-drift.js';
+import { scanProject } from './projects.js';
+import { parseCode } from './structure.js';
 
 export function registerExtendedTools(tool,store) {
   const project=z.string().uuid(),budget=z.number().int().min(300).max(50000).default(2000);
@@ -32,16 +37,14 @@ export function registerExtendedTools(tool,store) {
       WHERE c.project_id=? AND c.module=? AND r.status NOT IN ('removed','superseded','retired') ORDER BY c.title LIMIT 12`).all(args.project_id,args.module);
     return {...pack(rows,{budget:args.budget}),modules};
   });
-  tool('get_dependency_context','Recupera manifestos e dependências declaradas no último inventário; não valida instalação ou versão carregada em produção.',{project_id:project,budget},true,args=>{
-    const row=store.list(args.project_id,'inventory',1)[0];
-    if(!row)return {found:false,next:'Execute project_analyze.'};
-    const data=JSON.parse(store.get(args.project_id,row.id).content).analysis;
-    return {inventory_ref:row.id,manifests:data?.manifests??[],dependencies:(data?.dependencies??[]).slice(0,80),verified_runtime:false};
+  tool('get_dependency_context','Manifestos atuais, dependências declaradas e arquivos consumidores por imports sintáticos. Não afirma versão carregada ou CVEs.',{project_id:project,name:z.string().max(200).optional(),budget},true,async args=>{
+    const project=store.project(args.project_id),scan=await scanProject(project.root,store.directory);
+    const {analyzeSources}=await import('./analysis.js');const data=analyzeSources(scan.sources);
+    return {manifests:data.manifests,dependencies:data.dependencies.filter(d=>!args.name||d.name===args.name).slice(0,80),consumers:args.name?scan.sources.flatMap(s=>parseCode({id:s.path,source_path:s.path,content:s.content}).imports.filter(spec=>spec===args.name||spec.startsWith(args.name+'/')).map(spec=>({path:s.path,specifier:spec,source_hash:s.hash}))).slice(0,100):[],verified_runtime:false,scan_complete:scan.complete,skipped:scan.skipped};
   });
-  tool('check_architecture_conflicts','Recupera decisões aceitas relacionadas à intenção para revisão. Não deduz contradições semânticas nem aprova arquitetura automaticamente.',{
-    project_id:project,intent:z.string().min(1).max(1000),budget
-  },true,args=>({verdict:'REVIEW_REQUIRED',...pack(store.search(args.project_id,args.intent,12,'decision').filter(row=>row.status==='accepted'),{budget:args.budget,query:args.intent}),
-    limits:'Candidatos de busca precisam ser conferidos com o código e requisitos. Nenhuma correspondência não significa aprovação.'}));
+  tool('check_architecture_conflicts','Avalia regras estruturadas contra fontes atuais e mudanças propostas; retorna conflitos com evidência e decisões relacionadas. Não aprova arquitetura por ausência de matches.',{
+    project_id:project,intent:z.string().min(1).max(1000),budget,changes:z.object({dependencies:z.array(z.string()).max(100).default([]),paths:z.array(z.string()).max(100).default([]),imports:z.array(z.object({path:z.string(),specifier:z.string()})).max(100).default([])}).default({})
+  },true,args=>architectureConflicts(store,args));
   tool('record_link','Liga duas referências canônicas do mesmo projeto, com relação explícita. Não altera estados silenciosamente.',{
     project_id:project,source_id:z.string().uuid(),target_id:z.string().uuid(),relation:z.enum(['depends_on','related_to','supersedes','implemented_by','verified_by'])
   },false,args=>{
@@ -52,24 +55,26 @@ export function registerExtendedTools(tool,store) {
     store.db.prepare('DELETE FROM retrieval_cache WHERE project_id=?').run(args.project_id);
     return {source_id:from,target_id:to,relation:args.relation,linked:true};
   });
-  tool('find_related_knowledge','Expande somente relações explícitas de uma referência, profundidade 1 e até 8 alvos.',{
-    project_id:project,id:z.string().uuid(),budget
-  },true,args=>{
-    const row=store.get(args.project_id,args.id),id=row.parent_id??row.id;
-    const links=store.db.prepare('SELECT target_id,relation FROM relations WHERE project_id=? AND source_id=? LIMIT 8').all(args.project_id,id);
-    return {...pack(links.map(link=>store.get(args.project_id,link.target_id)),{budget:args.budget}),relations:links,depth:1};
+  tool('find_related_knowledge','Expande relações explícitas nas duas direções, profundidade limitada e consultas inferidas opcionais marcadas como candidatas.',{
+    project_id:project,id:z.string().uuid(),budget,depth:z.number().int().min(1).max(2).default(1),direction:z.enum(['outgoing','incoming','both']).default('outgoing'),include_inferred:z.boolean().default(false)
+  },true,async args=>{
+    const row=store.get(args.project_id,args.id),id=row.parent_id??row.id,seen=new Set([id]),links=[],rows=[];let frontier=[id];
+    for(let depth=1;depth<=args.depth&&frontier.length;depth++){const next=[];for(const current of frontier){
+      const edges=store.db.prepare('SELECT source_id,target_id,relation FROM relations WHERE project_id=? AND (source_id=? OR target_id=?) ORDER BY source_id,target_id,relation LIMIT 30').all(args.project_id,current,current);
+      for(const edge of edges){const outgoing=edge.source_id===current;if(args.direction==='outgoing'&&!outgoing||args.direction==='incoming'&&outgoing)continue;const target=outgoing?edge.target_id:edge.source_id;if(seen.has(target)||rows.length>=8)continue;const record=store.get(args.project_id,target);if(['retired','removed','superseded'].includes(record.status))continue;seen.add(target);rows.push(record);links.push({...edge,direction:outgoing?'outgoing':'incoming',depth,classification:'EXPLICIT'});next.push(target);}
+    }frontier=next;}
+    if(args.include_inferred&&rows.length<8){const {retrieve}=await import('./retrieval.js');const found=await retrieve(store,args.project_id,row.title,{limit:8});for(const candidate of found.rows){const parent=candidate.parent_id??candidate.id;if(seen.has(parent)||rows.length>=8)continue;seen.add(parent);rows.push(candidate);links.push({source_id:id,target_id:parent,relation:'retrieval_candidate',classification:'INFERRED_NOT_CONFIRMED',depth:1});}}
+    return {...pack(rows,{budget:args.budget}),relations:links,depth:args.depth};
   });
-  tool('get_design_guidance','Orientação genérica de UI e regras do projeto. GUIDE/REFERENCE: não prova que o design existe nem substitui inspeção renderizada.',{
+  tool('get_design_guidance','Corpus próprio de padrões de UI, fontes oficiais, exemplos e regras do projeto; referência sem afirmar implementação ou conformidade.',{
     project_id:project,topic:z.string().min(1).max(1000),detail:z.enum(['standard','full']).default('standard')
-  },true,args=>({classification:'GUIDE_REFERENCE',topic:args.topic,detail:args.detail,rules:getRules(store,args.project_id,'ui'),
-    checklist:['Confirmar jornadas e critérios de aceite.','Revisar ordem dos passos, mensagens e recuperação.','Validar teclado/foco e estados vazio/erro/loading.','Verificar textos longos, overflow e telas pequenas.','Testar os temas e plataformas exigidos pelo projeto.','Informar o que foi visto ao vivo e o que ficou pendente.'],
-    limits:args.detail==='full'?'Não inclui corpus Apple HIG/skills de terceiros nem reviewer independente. Use as fontes e ferramentas autorizadas do projeto.':undefined}));
-  tool('analyze_knowledge_drift','Compara hashes das fontes indexadas com arquivos atuais, em páginas. Não reescreve requisitos e não simula análise semântica.',{
-    project_id:project,limit:z.number().int().min(1).max(100).default(30),offset:z.number().int().min(0).default(0)
-  },true,args=>analyzeDrift(store,args.project_id,args));
+  },true,args=>designGuidance(store,args.project_id,args.topic,args.detail));
+  tool('analyze_knowledge_drift','Classifica drift de fontes, referências documentais, movimentos, símbolos e afirmações estruturadas. Preserva requisitos futuros e ADRs; não reescreve fontes.',{
+    project_id:project,limit:z.number().int().min(1).max(100).default(30),offset:z.number().int().min(0).default(0),other_project_ids:z.array(z.string().uuid()).max(5).default([])
+  },true,async args=>({...await analyzeDrift(store,args.project_id,args),documents:await documentDrift(store,args.project_id,args)}));
   tool('propose_knowledge_patch','Salva proposta de alteração localizada em Markdown comum. Sem escrita no app; ADRs e regras de agentes ficam fora da aplicação automática.',{
-    project_id:project,path:z.string().min(1).max(1000),before:z.string().min(1).max(30000),after:z.string().max(30000),reason:z.string().min(1).max(4000)
-  },false,args=>proposePatch(store,{projectId:args.project_id,path:args.path,before:args.before,after:args.after,reason:args.reason}));
+    project_id:project,path:z.string().min(1).max(1000),before:z.string().min(1).max(30000),after:z.string().max(30000),reason:z.string().min(1).max(4000),drift_id:z.string().max(100).optional()
+  },false,args=>proposePatch(store,{projectId:args.project_id,path:args.path,before:args.before,after:args.after,reason:args.reason,driftId:args.drift_id}));
   tool('validate_knowledge_patch','Confere revisão por hash e trecho único da proposta. Não aplica; a aplicação explícita é pelo comando patch-apply --apply.',{
     project_id:project,id:z.string().uuid()
   },true,args=>validatePatch(store,args.project_id,args.id));

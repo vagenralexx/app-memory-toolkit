@@ -1,0 +1,236 @@
+{
+  "version": "1.0.0-rc.3",
+  "real_project": "App Memory Toolkit source",
+  "tools": 62,
+  "indexed_files": 68,
+  "typed": {
+    "engine": "TypeScript 5.9.3 TypeChecker",
+    "definitions": [
+      {
+        "name": "recommendDispatch",
+        "kind": "FunctionDeclaration",
+        "record_id": "aa2e7966-13f9-4b63-aaca-d9fcd5bde586",
+        "path": "src/routing.js",
+        "line": 6,
+        "source_hash": "133c3c2c9b011041572e5fe3f0daa05e8722bcf28900c5d9bf80493d5f312bbf",
+        "state": "SOURCE_CURRENT",
+        "type": "(store: any, args: any): { phase: any; risk: any; complexity: any; reasoning: any; signals: {}; local_eligible: boolean; recommended: any; alternatives: any; excluded: any; advisoryOnly: boolean; ... 4 more ...; next: string; }",
+        "symbol_key": "src/routing.js#recommendDispatch@6"
+      }
+    ],
+    "callers": [
+      {
+        "record_id": "b01a94c3-feac-4287-aa4b-94ee54d4ddd0",
+        "path": "src/gap-tools.js",
+        "line": 19,
+        "source_hash": "d58efc835849f0ab5ec374921924c0da06b2df126d19f5228433af01f10cf676",
+        "state": "SOURCE_CURRENT",
+        "expression": "recommendDispatch",
+        "targets": [
+          {
+            "name": "recommendDispatch",
+            "record_id": "aa2e7966-13f9-4b63-aaca-d9fcd5bde586",
+            "path": "src/routing.js",
+            "line": 6,
+            "source_hash": "133c3c2c9b011041572e5fe3f0daa05e8722bcf28900c5d9bf80493d5f312bbf",
+            "state": "SOURCE_CURRENT",
+            "type": "(store: any, args: any): { phase: any; risk: any; complexity: any; reasoning: any; signals: {}; local_eligible: boolean; recommended: any; alternatives: any; excluded: any; advisoryOnly: boolean; ... 4 more ...; next: string; }"
+          }
+        ],
+        "signature": "(store: any, args: any): { phase: any; risk: any; complexity: any; reasoning: any; signals: {}; local_eligible: boolean; recommended: any; alternatives: any; excluded: any; advisoryOnly: boolean; ... 4 more ...; next: string; }",
+        "resolution": "type_checker_symbol_identity"
+      },
+      {
+        "record_id": "e5e6637c-2d8b-4191-8273-cb16a2115c65",
+        "path": "src/server.js",
+        "line": 155,
+        "source_hash": "73fff9ac7610e5b4f1a793ba6752d7ced1686a63a62339edece0f53bfb6f6269",
+        "state": "SOURCE_CURRENT",
+        "expression": "recommendDispatch",
+        "targets": [
+          {
+            "name": "recommendDispatch",
+            "record_id": "aa2e7966-13f9-4b63-aaca-d9fcd5bde586",
+            "path": "src/routing.js",
+            "line": 6,
+            "source_hash": "133c3c2c9b011041572e5fe3f0daa05e8722bcf28900c5d9bf80493d5f312bbf",
+            "state": "SOURCE_CURRENT",
+            "type": "(store: any, args: any): { phase: any; risk: any; complexity: any; reasoning: any; signals: {}; local_eligible: boolean; recommended: any; alternatives: any; excluded: any; advisoryOnly: boolean; ... 4 more ...; next: string; }"
+          }
+        ],
+        "signature": "(store: any, args: any): { phase: any; risk: any; complexity: any; reasoning: any; signals: {}; local_eligible: boolean; recommended: any; alternatives: any; excluded: any; advisoryOnly: boolean; ... 4 more ...; next: string; }",
+        "resolution": "type_checker_symbol_identity"
+      },
+      {
+        "record_id": "00e2973b-ff2d-4d5c-84e7-36f2f4b56d3d",
+        "path": "test/gaps.test.js",
+        "line": 67,
+        "source_hash": "28916c09846431bedbc4a9737742df712765d5092f17f0cd1b491d8186b70a34",
+        "state": "SOURCE_CURRENT",
+        "expression": "recommendDispatch",
+        "targets": [
+          {
+            "name": "recommendDispatch",
+            "record_id": "aa2e7966-13f9-4b63-aaca-d9fcd5bde586",
+            "path": "src/routing.js",
+            "line": 6,
+            "source_hash": "133c3c2c9b011041572e5fe3f0daa05e8722bcf28900c5d9bf80493d5f312bbf",
+            "state": "SOURCE_CURRENT",
+            "type": "(store: any, args: any): { phase: any; risk: any; complexity: any; reasoning: any; signals: {}; local_eligible: boolean; recommended: any; alternatives: any; excluded: any; advisoryOnly: boolean; ... 4 more ...; next: string; }"
+          }
+        ],
+        "signature": "(store: any, args: any): { phase: any; risk: any; complexity: any; reasoning: any; signals: {}; local_eligible: boolean; recommended: any; alternatives: any; excluded: any; advisoryOnly: boolean; ... 4 more ...; next: string; }",
+        "resolution": "type_checker_symbol_identity"
+      },
+      {
+        "record_id": "00e2973b-ff2d-4d5c-84e7-36f2f4b56d3d",
+        "path": "test/gaps.test.js",
+        "line": 70,
+        "source_hash": "28916c09846431bedbc4a9737742df712765d5092f17f0cd1b491d8186b70a34",
+        "state": "SOURCE_CURRENT",
+        "expression": "recommendDispatch",
+        "targets": [
+          {
+            "name": "recommendDispatch",
+            "record_id": "aa2e7966-13f9-4b63-aaca-d9fcd5bde586",
+            "path": "src/routing.js",
+            "line": 6,
+            "source_hash": "133c3c2c9b011041572e5fe3f0daa05e8722bcf28900c5d9bf80493d5f312bbf",
+            "state": "SOURCE_CURRENT",
+            "type": "(store: any, args: any): { phase: any; risk: any; complexity: any; reasoning: any; signals: {}; local_eligible: boolean; recommended: any; alternatives: any; excluded: any; advisoryOnly: boolean; ... 4 more ...; next: string; }"
+          }
+        ],
+        "signature": "(store: any, args: any): { phase: any; risk: any; complexity: any; reasoning: any; signals: {}; local_eligible: boolean; recommended: any; alternatives: any; excluded: any; advisoryOnly: boolean; ... 4 more ...; next: string; }",
+        "resolution": "type_checker_symbol_identity"
+      },
+      {
+        "record_id": "00e2973b-ff2d-4d5c-84e7-36f2f4b56d3d",
+        "path": "test/gaps.test.js",
+        "line": 71,
+        "source_hash": "28916c09846431bedbc4a9737742df712765d5092f17f0cd1b491d8186b70a34",
+        "state": "SOURCE_CURRENT",
+        "expression": "recommendDispatch",
+        "targets": [
+          {
+            "name": "recommendDispatch",
+            "record_id": "aa2e7966-13f9-4b63-aaca-d9fcd5bde586",
+            "path": "src/routing.js",
+            "line": 6,
+            "source_hash": "133c3c2c9b011041572e5fe3f0daa05e8722bcf28900c5d9bf80493d5f312bbf",
+            "state": "SOURCE_CURRENT",
+            "type": "(store: any, args: any): { phase: any; risk: any; complexity: any; reasoning: any; signals: {}; local_eligible: boolean; recommended: any; alternatives: any; excluded: any; advisoryOnly: boolean; ... 4 more ...; next: string; }"
+          }
+        ],
+        "signature": "(store: any, args: any): { phase: any; risk: any; complexity: any; reasoning: any; signals: {}; local_eligible: boolean; recommended: any; alternatives: any; excluded: any; advisoryOnly: boolean; ... 4 more ...; next: string; }",
+        "resolution": "type_checker_symbol_identity"
+      },
+      {
+        "record_id": "00e2973b-ff2d-4d5c-84e7-36f2f4b56d3d",
+        "path": "test/gaps.test.js",
+        "line": 72,
+        "source_hash": "28916c09846431bedbc4a9737742df712765d5092f17f0cd1b491d8186b70a34",
+        "state": "SOURCE_CURRENT",
+        "expression": "recommendDispatch",
+        "targets": [
+          {
+            "name": "recommendDispatch",
+            "record_id": "aa2e7966-13f9-4b63-aaca-d9fcd5bde586",
+            "path": "src/routing.js",
+            "line": 6,
+            "source_hash": "133c3c2c9b011041572e5fe3f0daa05e8722bcf28900c5d9bf80493d5f312bbf",
+            "state": "SOURCE_CURRENT",
+            "type": "(store: any, args: any): { phase: any; risk: any; complexity: any; reasoning: any; signals: {}; local_eligible: boolean; recommended: any; alternatives: any; excluded: any; advisoryOnly: boolean; ... 4 more ...; next: string; }"
+          }
+        ],
+        "signature": "(store: any, args: any): { phase: any; risk: any; complexity: any; reasoning: any; signals: {}; local_eligible: boolean; recommended: any; alternatives: any; excluded: any; advisoryOnly: boolean; ... 4 more ...; next: string; }",
+        "resolution": "type_checker_symbol_identity"
+      },
+      {
+        "record_id": "00e2973b-ff2d-4d5c-84e7-36f2f4b56d3d",
+        "path": "test/gaps.test.js",
+        "line": 73,
+        "source_hash": "28916c09846431bedbc4a9737742df712765d5092f17f0cd1b491d8186b70a34",
+        "state": "SOURCE_CURRENT",
+        "expression": "recommendDispatch",
+        "targets": [
+          {
+            "name": "recommendDispatch",
+            "record_id": "aa2e7966-13f9-4b63-aaca-d9fcd5bde586",
+            "path": "src/routing.js",
+            "line": 6,
+            "source_hash": "133c3c2c9b011041572e5fe3f0daa05e8722bcf28900c5d9bf80493d5f312bbf",
+            "state": "SOURCE_CURRENT",
+            "type": "(store: any, args: any): { phase: any; risk: any; complexity: any; reasoning: any; signals: {}; local_eligible: boolean; recommended: any; alternatives: any; excluded: any; advisoryOnly: boolean; ... 4 more ...; next: string; }"
+          }
+        ],
+        "signature": "(store: any, args: any): { phase: any; risk: any; complexity: any; reasoning: any; signals: {}; local_eligible: boolean; recommended: any; alternatives: any; excluded: any; advisoryOnly: boolean; ... 4 more ...; next: string; }",
+        "resolution": "type_checker_symbol_identity"
+      },
+      {
+        "record_id": "00e2973b-ff2d-4d5c-84e7-36f2f4b56d3d",
+        "path": "test/gaps.test.js",
+        "line": 127,
+        "source_hash": "28916c09846431bedbc4a9737742df712765d5092f17f0cd1b491d8186b70a34",
+        "state": "SOURCE_CURRENT",
+        "expression": "recommendDispatch",
+        "targets": [
+          {
+            "name": "recommendDispatch",
+            "record_id": "aa2e7966-13f9-4b63-aaca-d9fcd5bde586",
+            "path": "src/routing.js",
+            "line": 6,
+            "source_hash": "133c3c2c9b011041572e5fe3f0daa05e8722bcf28900c5d9bf80493d5f312bbf",
+            "state": "SOURCE_CURRENT",
+            "type": "(store: any, args: any): { phase: any; risk: any; complexity: any; reasoning: any; signals: {}; local_eligible: boolean; recommended: any; alternatives: any; excluded: any; advisoryOnly: boolean; ... 4 more ...; next: string; }"
+          }
+        ],
+        "signature": "(store: any, args: any): { phase: any; risk: any; complexity: any; reasoning: any; signals: {}; local_eligible: boolean; recommended: any; alternatives: any; excluded: any; advisoryOnly: boolean; ... 4 more ...; next: string; }",
+        "resolution": "type_checker_symbol_identity"
+      }
+    ],
+    "files_checked": 47,
+    "warnings": []
+  },
+  "audit": {
+    "verdict": "NO_FINDINGS_IN_SCANNED_SURFACE",
+    "findings": 0,
+    "scanned": 3,
+    "host_opt_in": false,
+    "commands_executed": false
+  },
+  "dependencies": {
+    "name": "typescript",
+    "declared": [
+      {
+        "name": "typescript",
+        "declared": "5.9.3",
+        "source": "package.json"
+      }
+    ],
+    "consumers": [
+      {
+        "path": "src/structure.js",
+        "specifier": "typescript",
+        "source_hash": "db5906a8e1bc5e078b9d752958383a1e47f41585638591a764f7604289303d18"
+      },
+      {
+        "path": "src/type-intelligence.js",
+        "specifier": "typescript",
+        "source_hash": "648618ece6bf1aeda909ea53880f33b378398cee167b2688b12b633c7cd08e96"
+      }
+    ]
+  },
+  "drift": {
+    "sources": 68,
+    "document_references": 24,
+    "classification_counts": {
+      "CURRENT": 18,
+      "CODE_REMOVED": 6
+    }
+  },
+  "dispatch": {
+    "advisoryOnly": true,
+    "changesHostModel": false,
+    "configured_worker": null
+  }
+}

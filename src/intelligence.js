@@ -29,10 +29,10 @@ export async function codeReferences(store, projectId, topic, limit = 6) {
         excerpt: lines.slice(start, hit + 6).join('\n').slice(0, 1800),
         symbols:store.db.prepare('SELECT name,kind,line,end_line,signature FROM code_symbols WHERE record_id=? LIMIT 30').all(row.id),
         references:store.db.prepare(`SELECT r.source_path,c.line,c.name FROM code_references c JOIN records r ON r.id=c.record_id
-          WHERE c.project_id=? AND c.name=? LIMIT 20`).all(projectId,topic),
+          WHERE c.project_id=? AND c.name=? LIMIT 20`).all(projectId,topic).map(ref=>({...ref,state:'INDEXED_NOT_LIVE_VERIFIED'})),
         note: 'Hash atual confirmado. Referências sintáticas por nome não resolvem aliases/tipos entre módulos e não comprovam execução.' });
     } catch { results.push({ id: row.id, source_path: row.source_path, state: 'SOURCE_UNAVAILABLE', note: 'Fonte ausente, fora da raiz ou não legível.' }); }
   }
   return { results, structural_index_available: store.db.prepare('SELECT count(*) AS n FROM code_symbols WHERE project_id=?').get(projectId).n>0, execution_verified: false,
-    supported_structural_languages:['JavaScript','TypeScript','JSX','TSX'] };
+    supported_structural_languages:['JavaScript','TypeScript','JSX','TSX','Python (partial line parser)'] };
 }

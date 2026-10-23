@@ -3,6 +3,13 @@ import { mkdir, open, rename, unlink } from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
 import { safeFile, readBounded, assertSafeMemory } from './safety.js';
 import { hash } from './store.js';
+import { documentDrift } from './document-drift.js';
+import { scanProject } from './projects.js';
+
+async function codeFingerprint(store, project) {
+  const scan=await scanProject(project.root,store.directory);
+  return hash(scan.sources.filter(s=>s.kind==='code').map(s=>`${s.path}:${s.hash}`).join('\n'));
+}
 
 export async function analyzeDrift(store,projectId,{limit=30,offset=0}={}) {
   const project=store.project(projectId);
@@ -22,7 +29,7 @@ export async function analyzeDrift(store,projectId,{limit=30,offset=0}={}) {
     limits:'Detecta mudanças de fontes por hash. Não é um detector semântico completo de divergências entre requisitos e implementação.'};
 }
 
-export async function proposePatch(store,{projectId,path,before,after,reason}) {
+export async function proposePatch(store,{projectId,path,before,after,reason,driftId}) {
   const project=store.project(projectId);
   if(!/\.md$/i.test(path)||/(^|\/|\\)(?:ADR[-_]|AGENTS\.md$|CLAUDE\.md$)/i.test(path)) throw new Error('Propostas automáticas são limitadas a Markdown comum. ADRs e regras de agentes precisam de edição humana explícita.');
   if(!before?.trim()||before===after||!reason?.trim()) throw new Error('Informe trecho atual, alteração e motivo.');
@@ -30,7 +37,14 @@ export async function proposePatch(store,{projectId,path,before,after,reason}) {
   const file=await safeFile(project.root,join(project.root,path));
   const content=await readBounded(file.path);
   if(content.split(before).length!==2) throw new Error('O trecho precisa existir exatamente uma vez na fonte atual.');
-  const proposal={path,before,after,reason,base_hash:hash(content),classification:'PROPOSED_NOT_APPLIED'};
+  let drift=null;
+  if(driftId){
+    let offset=0;
+    do {const page=await documentDrift(store,projectId,{limit:100,offset});drift=page.items.find(item=>item.id===driftId);if(drift||page.next_offset===null)break;offset=page.next_offset;}while(offset<50000);
+    if(!drift||drift.document!==path||!drift.patch_allowed||drift.classification!=='PATH_MOVED')throw new Error('Drift não permite patch automático localizado; exige revisão.');
+    if(!before.includes(drift.reference.path)||!after.includes(drift.candidate))throw new Error('A alteração precisa corresponder ao caminho comprovadamente movido.');
+  }
+  const proposal={path,before,after,reason,base_hash:hash(content),classification:'PROPOSED_NOT_APPLIED',drift:drift?{id:drift.id,classification:drift.classification,candidate:drift.candidate}:null,code_fingerprint:drift?await codeFingerprint(store,project):null};
   const row=store.write({projectId,kind:'proposal',title:`Reconciliação: ${path}`,content:JSON.stringify(proposal),status:'proposed'});
   return {id:row.id,revision:row.revision,...proposal,next:'Use validate_knowledge_patch; aplicação somente pelo comando patch-apply --apply.'};
 }
@@ -41,9 +55,10 @@ export async function validatePatch(store,projectId,id) {
   const proposal=JSON.parse(row.content),project=store.project(projectId);
   const file=await safeFile(project.root,join(project.root,proposal.path));
   const content=await readBounded(file.path);
-  const valid=row.status==='proposed'&&hash(content)===proposal.base_hash&&content.split(proposal.before).length===2;
+  const codeCurrent=!proposal.code_fingerprint||proposal.code_fingerprint===await codeFingerprint(store,project);
+  const valid=row.status==='proposed'&&hash(content)===proposal.base_hash&&content.split(proposal.before).length===2&&codeCurrent;
   return {id,valid,path:proposal.path,base_hash:proposal.base_hash,current_hash:hash(content),applied:row.status==='applied',
-    reason:valid?'Fonte e trecho conferidos.':'Fonte mudou, trecho divergiu ou proposta já foi aplicada.',preview:valid?{before:proposal.before,after:proposal.after}:null};
+    code_evidence_current:codeCurrent,reason:valid?'Fonte e trecho conferidos.':!codeCurrent?'Código mudou desde a proposta.':'Fonte mudou, trecho divergiu ou proposta já foi aplicada.',preview:valid?{before:proposal.before,after:proposal.after}:null};
 }
 
 export async function applyPatch(store,projectId,id,{apply=false}={}) {
@@ -54,6 +69,7 @@ export async function applyPatch(store,projectId,id,{apply=false}={}) {
   const file=await safeFile(project.root,join(project.root,proposal.path));
   const content=await readBounded(file.path);
   if(hash(content)!==proposal.base_hash) throw new Error('Fonte mudou durante a validação.');
+  if(proposal.code_fingerprint&&proposal.code_fingerprint!==await codeFingerprint(store,project))throw new Error('Código mudou durante a validação.');
   const backupDirectory=join(store.directory,'file-backups',projectId);
   await mkdir(backupDirectory,{recursive:true});
   const backupPath=join(backupDirectory,`${id}.md`);

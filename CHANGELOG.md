@@ -1,5 +1,17 @@
 # Histórico
 
+## 1.0.0-rc.3 — 2026-10-23
+
+- Cobertura das 28 capacidades do catálogo de referência, com contratos próprios e matriz verificável.
+- Auditoria estática de superfície MCP/hooks/permissões, segredos redigidos e configurações pessoais opt-in.
+- Perfis portáveis de workers e roteamento consultivo por fase/risco/raciocínio/disponibilidade.
+- TypeChecker JS/TS resolve aliases, reexports, imports locais, tipos e chamadas; Python parcial explícito.
+- Corpus próprio UI e cinco padrões React ViewTransition com exemplos e fontes.
+- Memória com lista/status, feedback idempotente, reforço declarado, destilação, retirada e purge com snapshot.
+- Cache opt-in de resposta por sessão, referências recuperáveis e invalidação por revisão.
+- Restrições verificáveis de arquitetura, claims documentais, classificação de referências e patches ligados à evidência de código.
+- Contexto de projeto/ecossistema/dependências e expansão de relações aprimorados; total 62 ferramentas.
+
 ## 1.0.0-rc.2 — 2026-10-23
 
 - Instalação por agente: setup configura conexão e bloco de ativação no projeto, com prévia, preservação, backup e idempotência.

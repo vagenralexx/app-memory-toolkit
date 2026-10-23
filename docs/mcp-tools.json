@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-rc.2",
+  "version": "1.0.0-rc.3",
   "tools": [
     {
       "name": "start_project",
@@ -271,6 +271,14 @@
           "include_inactive": {
             "default": false,
             "type": "boolean"
+          },
+          "cache_mode": {
+            "default": "full",
+            "type": "string",
+            "enum": [
+              "full",
+              "reference"
+            ]
           }
         },
         "required": [
@@ -356,6 +364,14 @@
             "type": "integer",
             "minimum": 300,
             "maximum": 50000
+          },
+          "cache_mode": {
+            "default": "full",
+            "type": "string",
+            "enum": [
+              "full",
+              "reference"
+            ]
           }
         },
         "required": [
@@ -835,7 +851,7 @@
     },
     {
       "name": "get_task_briefing",
-      "description": "Triagem inicial enxuta: tarefa, decisões e fontes pertinentes; não escolhe modelo nem inventa implementação.",
+      "description": "Triagem inicial com contexto e recomendação consultiva de worker/modelo; não altera o host nem inventa implementação.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -860,7 +876,6 @@
             "maxLength": 120
           },
           "phase": {
-            "default": "explore",
             "type": "string",
             "enum": [
               "explore",
@@ -873,11 +888,43 @@
               "final_review"
             ]
           },
+          "risk": {
+            "type": "string",
+            "enum": [
+              "normal",
+              "high",
+              "critical"
+            ]
+          },
+          "complexity": {
+            "type": "string",
+            "enum": [
+              "P",
+              "M",
+              "G"
+            ]
+          },
+          "unavailable_workers": {
+            "default": [],
+            "maxItems": 100,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
           "budget": {
             "default": 2000,
             "type": "integer",
             "minimum": 300,
             "maximum": 50000
+          },
+          "cache_mode": {
+            "default": "full",
+            "type": "string",
+            "enum": [
+              "full",
+              "reference"
+            ]
           }
         },
         "required": [
@@ -1157,7 +1204,7 @@
     },
     {
       "name": "get_code_references",
-      "description": "Localiza código por busca lexical, confirma hash atual e retorna linhas. Não é AST nem prova de execução.",
+      "description": "Localiza código com hashes atuais e linhas, mais TypeChecker para aliases, imports e chamadas JS/TS entre arquivos. Não comprova execução.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -1301,6 +1348,14 @@
             "type": "integer",
             "minimum": 300,
             "maximum": 50000
+          },
+          "cache_mode": {
+            "default": "full",
+            "type": "string",
+            "enum": [
+              "full",
+              "reference"
+            ]
           }
         },
         "required": [
@@ -1350,6 +1405,41 @@
         "required": [
           "project_id",
           "query"
+        ],
+        "$schema": "https://json-schema.org/draft/2020-12/schema"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "resolve_cached_ref",
+      "description": "Recupera resposta entregue anteriormente nesta sessão MCP, com verificação de revisão e orçamento; referências de outro cliente/restart são recusadas.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "description": "ID retornado por project_register ou project_list."
+          },
+          "ref": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "budget": {
+            "default": 2000,
+            "type": "integer",
+            "minimum": 300,
+            "maximum": 50000
+          }
+        },
+        "required": [
+          "ref"
         ],
         "$schema": "https://json-schema.org/draft/2020-12/schema"
       },
@@ -1514,6 +1604,14 @@
             "type": "integer",
             "minimum": 300,
             "maximum": 50000
+          },
+          "cache_mode": {
+            "default": "full",
+            "type": "string",
+            "enum": [
+              "full",
+              "reference"
+            ]
           }
         },
         "required": [
@@ -1529,7 +1627,7 @@
     },
     {
       "name": "get_dependency_context",
-      "description": "Recupera manifestos e dependências declaradas no último inventário; não valida instalação ou versão carregada em produção.",
+      "description": "Manifestos atuais, dependências declaradas e arquivos consumidores por imports sintáticos. Não afirma versão carregada ou CVEs.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -1537,6 +1635,10 @@
             "type": "string",
             "format": "uuid",
             "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 200
           },
           "budget": {
             "default": 2000,
@@ -1558,7 +1660,7 @@
     },
     {
       "name": "check_architecture_conflicts",
-      "description": "Recupera decisões aceitas relacionadas à intenção para revisão. Não deduz contradições semânticas nem aprova arquitetura automaticamente.",
+      "description": "Avalia regras estruturadas contra fontes atuais e mudanças propostas; retorna conflitos com evidência e decisões relacionadas. Não aprova arquitetura por ausência de matches.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -1577,6 +1679,48 @@
             "type": "integer",
             "minimum": 300,
             "maximum": 50000
+          },
+          "changes": {
+            "default": {},
+            "type": "object",
+            "properties": {
+              "dependencies": {
+                "default": [],
+                "maxItems": 100,
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "paths": {
+                "default": [],
+                "maxItems": 100,
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "imports": {
+                "default": [],
+                "maxItems": 100,
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "path": {
+                      "type": "string"
+                    },
+                    "specifier": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path",
+                    "specifier"
+                  ]
+                }
+              }
+            }
           }
         },
         "required": [
@@ -1639,7 +1783,7 @@
     },
     {
       "name": "find_related_knowledge",
-      "description": "Expande somente relações explícitas de uma referência, profundidade 1 e até 8 alvos.",
+      "description": "Expande relações explícitas nas duas direções, profundidade limitada e consultas inferidas opcionais marcadas como candidatas.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -1658,6 +1802,25 @@
             "type": "integer",
             "minimum": 300,
             "maximum": 50000
+          },
+          "depth": {
+            "default": 1,
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2
+          },
+          "direction": {
+            "default": "outgoing",
+            "type": "string",
+            "enum": [
+              "outgoing",
+              "incoming",
+              "both"
+            ]
+          },
+          "include_inferred": {
+            "default": false,
+            "type": "boolean"
           }
         },
         "required": [
@@ -1674,7 +1837,7 @@
     },
     {
       "name": "get_design_guidance",
-      "description": "Orientação genérica de UI e regras do projeto. GUIDE/REFERENCE: não prova que o design existe nem substitui inspeção renderizada.",
+      "description": "Corpus próprio de padrões de UI, fontes oficiais, exemplos e regras do projeto; referência sem afirmar implementação ou conformidade.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -1695,6 +1858,14 @@
               "standard",
               "full"
             ]
+          },
+          "cache_mode": {
+            "default": "full",
+            "type": "string",
+            "enum": [
+              "full",
+              "reference"
+            ]
           }
         },
         "required": [
@@ -1711,7 +1882,7 @@
     },
     {
       "name": "analyze_knowledge_drift",
-      "description": "Compara hashes das fontes indexadas com arquivos atuais, em páginas. Não reescreve requisitos e não simula análise semântica.",
+      "description": "Classifica drift de fontes, referências documentais, movimentos, símbolos e afirmações estruturadas. Preserva requisitos futuros e ADRs; não reescreve fontes.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -1731,6 +1902,16 @@
             "type": "integer",
             "minimum": 0,
             "maximum": 9007199254740991
+          },
+          "other_project_ids": {
+            "default": [],
+            "maxItems": 5,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            }
           }
         },
         "required": [
@@ -1773,6 +1954,10 @@
             "type": "string",
             "minLength": 1,
             "maxLength": 4000
+          },
+          "drift_id": {
+            "type": "string",
+            "maxLength": 100
           }
         },
         "required": [
@@ -1895,6 +2080,860 @@
             "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
           }
         },
+        "$schema": "https://json-schema.org/draft/2020-12/schema"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "memory_list",
+      "description": "Lista metadados de memória com paginação, sem carregar valores; padrões e notas isolados por projeto.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "namespace": {
+            "default": "patterns",
+            "type": "string",
+            "enum": [
+              "patterns",
+              "notes"
+            ]
+          },
+          "include_inactive": {
+            "default": false,
+            "type": "boolean"
+          },
+          "limit": {
+            "default": 50,
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "offset": {
+            "default": 0,
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "project_id"
+        ],
+        "$schema": "https://json-schema.org/draft/2020-12/schema"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "memory_status",
+      "description": "Contagens de memória e feedback por projeto, sem valores; informa inferência local e natureza dos resultados declarados.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          }
+        },
+        "required": [
+          "project_id"
+        ],
+        "$schema": "https://json-schema.org/draft/2020-12/schema"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "memory_delete",
+      "description": "Retira memória com revisão. purge=true exclui registro/histórico da base após snapshot; backups anteriores preservam o conteúdo.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "namespace": {
+            "default": "patterns",
+            "type": "string",
+            "enum": [
+              "patterns",
+              "notes"
+            ]
+          },
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "expected_revision": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "purge": {
+            "default": false,
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "project_id",
+          "key",
+          "expected_revision"
+        ],
+        "$schema": "https://json-schema.org/draft/2020-12/schema"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "memory_feedback",
+      "description": "Registra resultado com evidência, reforço estatístico declarado e destilação opcional. idempotency_key evita duplicar no retry.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "namespace": {
+            "default": "patterns",
+            "type": "string",
+            "enum": [
+              "patterns",
+              "notes"
+            ]
+          },
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "task": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 6000
+          },
+          "quality": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "helpful_docs": {
+            "default": [],
+            "maxItems": 30,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 1000
+            }
+          },
+          "success": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "string",
+                "const": "partial"
+              }
+            ]
+          },
+          "agent": {
+            "default": "unspecified",
+            "type": "string",
+            "maxLength": 120
+          },
+          "feedback": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 6000
+          },
+          "evidence": {
+            "minItems": 1,
+            "maxItems": 30,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            }
+          },
+          "idempotency_key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "lesson_key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "lesson": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 12000
+          }
+        },
+        "required": [
+          "project_id",
+          "success",
+          "feedback",
+          "evidence",
+          "idempotency_key"
+        ],
+        "$schema": "https://json-schema.org/draft/2020-12/schema"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "security_audit",
+      "description": "Auditoria estática especializada de MCP, hooks, permissões, segredos redigidos e seletores de dependência. Somente leitura; configuração pessoal só com include_host_config=true.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "include_host_config": {
+            "default": false,
+            "type": "boolean"
+          },
+          "limit": {
+            "default": 50,
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "offset": {
+            "default": 0,
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "project_id"
+        ],
+        "$schema": "https://json-schema.org/draft/2020-12/schema"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "worker_profile_set",
+      "description": "Cadastra capacidade declarada e modelo de um worker por projeto, sem credenciais ou execução. Perfis são portáveis e revisionados.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "expected_revision": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "client": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "model": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "phases": {
+            "minItems": 1,
+            "maxItems": 8,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "explore",
+                "plan",
+                "architecture",
+                "implement",
+                "test",
+                "debug",
+                "review",
+                "final_review"
+              ]
+            }
+          },
+          "reasoning": {
+            "type": "string",
+            "enum": [
+              "standard",
+              "advanced"
+            ]
+          },
+          "local": {
+            "default": false,
+            "type": "boolean"
+          },
+          "tools": {
+            "default": true,
+            "type": "boolean"
+          },
+          "priority": {
+            "default": 50,
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "capacity_evidence": {
+            "minItems": 1,
+            "maxItems": 20,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 2000
+            }
+          },
+          "status": {
+            "default": "active",
+            "type": "string",
+            "enum": [
+              "active",
+              "retired"
+            ]
+          }
+        },
+        "required": [
+          "project_id",
+          "name",
+          "client",
+          "model",
+          "phases",
+          "reasoning",
+          "capacity_evidence"
+        ],
+        "$schema": "https://json-schema.org/draft/2020-12/schema"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "worker_list",
+      "description": "Lista perfis reais registrados para este projeto; não inventa modelos disponíveis ou identidade do host.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          }
+        },
+        "required": [
+          "project_id"
+        ],
+        "$schema": "https://json-schema.org/draft/2020-12/schema"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "recommend_task_dispatch",
+      "description": "Recomenda worker/modelo por fase, complexidade, risco, raciocínio e disponibilidade. Advisory: não muda o modelo nem inicia outros agentes.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "task": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 12000
+          },
+          "phase": {
+            "type": "string",
+            "enum": [
+              "explore",
+              "plan",
+              "architecture",
+              "implement",
+              "test",
+              "debug",
+              "review",
+              "final_review"
+            ]
+          },
+          "risk": {
+            "type": "string",
+            "enum": [
+              "normal",
+              "high",
+              "critical"
+            ]
+          },
+          "complexity": {
+            "type": "string",
+            "enum": [
+              "P",
+              "M",
+              "G"
+            ]
+          },
+          "reasoning": {
+            "type": "string",
+            "enum": [
+              "standard",
+              "advanced"
+            ]
+          },
+          "agent": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "unavailable_workers": {
+            "default": [],
+            "maxItems": 100,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 120
+            }
+          },
+          "simple_transformation": {
+            "default": false,
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "project_id",
+          "task"
+        ],
+        "$schema": "https://json-schema.org/draft/2020-12/schema"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "get_symbol_context",
+      "description": "TypeChecker resolve símbolos, aliases, reexports, tipos, chamadas e imports entre JS/TS indexados e atuais. Não executa o projeto.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "symbol": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
+          },
+          "file": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "limit": {
+            "default": 30,
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          }
+        },
+        "required": [
+          "project_id"
+        ],
+        "$schema": "https://json-schema.org/draft/2020-12/schema"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "get_react_view_transitions",
+      "description": "Corpus próprio com cinco padrões React ViewTransition, exemplos, redução de movimento e verificação de disponibilidade. Referência, não implementação comprovada.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "topic": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "detail": {
+            "default": "standard",
+            "type": "string",
+            "enum": [
+              "standard",
+              "full"
+            ]
+          },
+          "cache_mode": {
+            "default": "full",
+            "type": "string",
+            "enum": [
+              "full",
+              "reference"
+            ]
+          }
+        },
+        "required": [
+          "project_id"
+        ],
+        "$schema": "https://json-schema.org/draft/2020-12/schema"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "architecture_rule_set",
+      "description": "Registra restrição verificável de arquitetura: dependências, imports, caminhos, símbolos, texto ou domínio declarado ausente. Vinculação a ADR exige decisão aceita.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "expected_revision": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "dependency_absent",
+              "dependency_present",
+              "path_absent",
+              "path_present",
+              "import_forbidden",
+              "module_boundary",
+              "text_absent",
+              "text_present",
+              "domain_absent",
+              "symbol_present"
+            ]
+          },
+          "pattern": {
+            "default": "**",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
+          },
+          "value": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "target": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "decision_id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "evidence": {
+            "minItems": 1,
+            "maxItems": 20,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            }
+          },
+          "explanation": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 3000
+          },
+          "status": {
+            "default": "active",
+            "type": "string",
+            "enum": [
+              "active",
+              "retired"
+            ]
+          }
+        },
+        "required": [
+          "project_id",
+          "title",
+          "kind",
+          "value",
+          "evidence",
+          "explanation"
+        ],
+        "$schema": "https://json-schema.org/draft/2020-12/schema"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "knowledge_claim_record",
+      "description": "Registra uma afirmação documental verificável contra fontes atuais. analyze_knowledge_drift a avalia sem converter requisitos futuros em implementação.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "expected_revision": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "dependency_absent",
+              "dependency_present",
+              "path_absent",
+              "path_present",
+              "import_forbidden",
+              "module_boundary",
+              "text_absent",
+              "text_present",
+              "domain_absent",
+              "symbol_present"
+            ]
+          },
+          "pattern": {
+            "default": "**",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
+          },
+          "value": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "target": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "decision_id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "evidence": {
+            "minItems": 1,
+            "maxItems": 20,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            }
+          },
+          "explanation": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 3000
+          },
+          "status": {
+            "default": "active",
+            "type": "string",
+            "enum": [
+              "active",
+              "retired"
+            ]
+          }
+        },
+        "required": [
+          "project_id",
+          "title",
+          "kind",
+          "value",
+          "evidence",
+          "explanation"
+        ],
+        "$schema": "https://json-schema.org/draft/2020-12/schema"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "get_project_context",
+      "description": "Identidade, lacunas de onboarding, módulos, contagens e referências de decisões do projeto. Não herda a última tarefa de outra sessão.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "budget": {
+            "default": 2000,
+            "type": "integer",
+            "minimum": 300,
+            "maximum": 50000
+          },
+          "cache_mode": {
+            "default": "full",
+            "type": "string",
+            "enum": [
+              "full",
+              "reference"
+            ]
+          }
+        },
+        "required": [
+          "project_id"
+        ],
+        "$schema": "https://json-schema.org/draft/2020-12/schema"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "get_ecosystem_context",
+      "description": "Visão paginada dos projetos desta base com módulos e contagens, sem misturar tarefas/conteúdo. Não compartilha histórico privado de conversas.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "default": 50,
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "offset": {
+            "default": 0,
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "cache_mode": {
+            "default": "full",
+            "type": "string",
+            "enum": [
+              "full",
+              "reference"
+            ]
+          }
+        },
+        "$schema": "https://json-schema.org/draft/2020-12/schema"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "knowledge_status",
+      "description": "Estado do índice e orçamento de conhecimento por projeto; equivalente explícito da saúde, sem atestado de execução.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          }
+        },
+        "required": [
+          "project_id"
+        ],
         "$schema": "https://json-schema.org/draft/2020-12/schema"
       },
       "annotations": {

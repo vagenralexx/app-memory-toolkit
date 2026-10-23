@@ -1,4 +1,4 @@
-# Escopo da versão de avaliação 1.0.0-rc.2
+# Escopo da versão de avaliação 1.0.0-rc.3
 
 ## Objetivo e conclusão técnica
 
@@ -36,7 +36,7 @@ Schema 3 adiciona chunks, vetores com fingerprint, símbolos/referências sintá
 
 As regras foram extraídas da leitura do código/contratos reais e da consulta ao MCP original em execução. Políticas do Melhor Preço/Print&Cut não viraram defaults universais. As regras gerais são anunciadas no initialize; regras de produto são registradas explicitamente por projeto.
 
-Há busca híbrida, grafo de relações explícitas, referências sintáticas e cache. Isso não constitui uma cópia de todos os contratos ou do motor completo do MCP anterior. A ferramenta não inclui resolução de tipos entre módulos, auditor agêntico completo, roteador de modelos, ingestão web automática, aplicação automática de ADRs nem vínculo implícito entre conversas de hosts diferentes.
+Há busca híbrida, grafo de relações explícitas, referências sintáticas e cache. Isso não constitui uma cópia de todos os contratos ou do motor completo do MCP anterior. A versão rc.3 acrescenta TypeChecker para arquivos locais JS/TS, auditoria estática de superfície de agentes, roteamento consultivo configurável, corpus UI/React, cache de resposta por sessão, feedback de memória, regras verificáveis de arquitetura e classificação de referências documentais. A matriz CAPABILITIES.md mapeia as 28 capacidades de referência. Não há execução automática de agentes, interpretação infalível de linguagem natural, ingestão web automática ou vínculo implícito entre conversas.
 
 ## Critérios verificados
 

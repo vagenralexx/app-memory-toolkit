@@ -1,3 +1,4 @@
+import { feedbackScore } from './memory-quality.js';
 import { present } from './store.js';
 import { queryTerms } from './text.js';
 
@@ -76,20 +77,21 @@ export function memoryStore(store, args) {
   });
 }
 
-export function memoryRetrieve(store, projectId, namespace, key) {
+export function memoryRetrieve(store, projectId, namespace, key, {includeInactive=false}={}) {
   store.project(projectId);
   const row = store.db.prepare('SELECT record_id FROM memory_keys WHERE project_id=? AND namespace=? AND key=?').get(projectId, namespace, key);
   if (!row) return [];
-  return [store.get(projectId, row.record_id)];
+  const record=store.get(projectId, row.record_id);
+  return !includeInactive&&['retired','removed'].includes(record.status)?[]:[{...record,feedback:feedbackScore(store,projectId,record.id)}];
 }
 
 export function memorySearch(store, projectId, query, namespace) {
   store.project(projectId);
   const terms = queryTerms(query,16);
   if (!terms.length) return [];
-  return store.db.prepare(`SELECT r.* FROM search JOIN records r ON r.rowid=search.rowid
+  return store.db.prepare(`SELECT r.*,bm25(search,4.0,1.0) AS lexical_score FROM search JOIN records r ON r.rowid=search.rowid
     JOIN memory_keys k ON k.record_id=r.id AND k.project_id=r.project_id
     WHERE search MATCH ? AND r.project_id=? AND r.status NOT IN ('removed','retired','superseded','deprecated') AND (? IS NULL OR k.namespace=?)
     ORDER BY bm25(search,4.0,1.0),r.id LIMIT 30`)
-    .all(terms.map(term => `"${term}"`).join(' OR '), projectId, namespace ?? null, namespace ?? null);
+    .all(terms.map(term => `"${term}"`).join(' OR '), projectId, namespace ?? null, namespace ?? null).map(row=>{const feedback=feedbackScore(store,projectId,row.id);return {...row,feedback,feedback_rank:row.lexical_score*(1+(feedback.support_score-.5)*.4)};}).sort((a,b)=>a.feedback_rank-b.feedback_rank||a.id.localeCompare(b.id));
 }

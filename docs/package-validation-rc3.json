@@ -1,0 +1,13 @@
+{
+  "version": "1.0.0-rc.3",
+  "installed_from": "local_tgz",
+  "tools": 62,
+  "original_capabilities": 28,
+  "all_original_names_present": true,
+  "typed_alias_caller": "PASS",
+  "feedback": "PASS",
+  "session_cache": "PASS",
+  "security_audit_read_only": true,
+  "briefing_dispatch": "advisory",
+  "actual_client_application_reloaded": false
+}

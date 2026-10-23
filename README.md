@@ -1,4 +1,6 @@
-# App Memory Toolkit — 1.0.0-rc.2
+# App Memory Toolkit — 1.0.0-rc.3
+
+**Capacidades:** consulte a [matriz das 28 capacidades de referência](docs/CAPABILITIES.md) e os [novos contratos](docs/GAP-CLOSURE.md).
 
 **Instalar pelo agente:** veja [INSTALL.md](INSTALL.md), com o pedido pronto para copiar. Depois de instalado, peça “Vamos usar o App Memory neste projeto”; o início é `start_project` com a raiz absoluta.
 
@@ -23,7 +25,7 @@ node src/cli.js wizard --data "D:\AppMemory\base"
 Para instalar o pacote distribuído em outra pasta/máquina com Node.js:
 
 ```powershell
-npm install --global "C:\caminho\app-memory-toolkit-1.0.0-rc.2.tgz" --ignore-scripts
+npm install --global "C:\caminho\app-memory-toolkit-1.0.0-rc.3.tgz" --ignore-scripts
 app-memory wizard --data "D:\AppMemory\base"
 ```
 
@@ -34,7 +36,7 @@ O pacote inclui o código e as dependências travadas por `npm-shrinkwrap.json`;
 - Questionário de 13 perguntas e retomada das respostas.
 - App novo: prévia, estrutura, `APP_MEMORY.md`, `AGENTS.md`, importação para `CLAUDE.md` e `.app-memory.json` com identidade e exclusões.
 - App existente: inventário, linguagens, manifestos, dependências declaradas, módulos e perguntas pendentes, sem executar o código nem reorganizar a pasta.
-- 46 ferramentas MCP; política central na inicialização, regras por projeto e memória isolada por projeto.
+- 62 ferramentas MCP; política central na inicialização, regras por projeto e memória isolada por projeto.
 - Busca por chunks com BM25, embeddings locais opcionais, fusão RRF, reranking, deduplicação e limite por documento.
 - Referências com origem, hash, revisão, seção e linhas; níveis `summary/detail/raw`.
 - Índice sintático de funções/classes/interfaces/importações e chamadas para JS/TS/JSX/TSX. Outros formatos continuam pesquisáveis como texto.
@@ -131,7 +133,7 @@ A base inteira pertence ao usuário local; isolamento por projeto não é autent
 
 Indexação: até 5.000 arquivos, 100 KB por arquivo, 12 MB totais e 30.000 entradas. Respeita `.gitignore` aninhado sem precisar de Git, exclusões internas e `exclude` de `.app-memory.json`. Não segue symlinks, executa scripts do app ou indexa dependências/build/env conhecidos. A detecção de segredos é heurística e não substitui uma revisão do corpus.
 
-O budget usa bytes UTF-8/3, não o tokenizer de todos os clientes; `omitted` e `truncated` são explícitos. Métricas são de payload, não custo total de conversa nem economia comprovada. AST é sintático para JS/TS e não resolve tipos/aliases entre módulos. Não há auditor de segurança equivalente ao módulo especializado do MCP antigo, interface gráfica, instalador MSI ou atualização automática.
+O budget usa bytes UTF-8/3, não o tokenizer de todos os clientes; `omitted` e `truncated` são explícitos. Métricas são de payload, não custo total de conversa nem economia comprovada. O índice sintático é complementado por TypeChecker local para imports, aliases e tipos JS/TS disponíveis; bibliotecas externas não indexadas e execução dinâmica continuam fora da prova. A auditoria especializada cobre a superfície estática descrita em docs/GAP-CLOSURE.md. Não há interface gráfica, instalador MSI ou atualização automática.
 
 Os testes de SDK e de configuração não substituem a validação de login/modelo/interface em cada cliente final. As instruções orientam o agente; não garantem que todo modelo seguirá o fluxo.
 

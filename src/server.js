@@ -12,6 +12,10 @@ import { searchKnowledge, retrieve } from './retrieval.js';
 import { indexEmbeddings } from './semantic.js';
 import { startProject } from './startup.js';
 import { prepareProject } from './organization.js';
+import { SessionCache,CACHE_TOOLS } from './session-cache.js';
+import { registerGapTools } from './gap-tools.js';
+import { recommendDispatch } from './routing.js';
+import { typedContext } from './type-intelligence.js';
 import { registerExtendedTools } from './extended-tools.js';
 
 const project = z.string().uuid().describe('ID retornado por project_register ou project_list.');
@@ -29,13 +33,17 @@ const json = value => ({ content: [{ type: 'text', text: JSON.stringify(value) }
 
 export function createServer(store) {
   const server = new McpServer({ name: 'app-memory-toolkit', version: VERSION }, { instructions: SERVER_INSTRUCTIONS });
+  const responseCache=new SessionCache(store);
   function tool(name, description, schema, readOnly, action) {
+    if(CACHE_TOOLS.has(name))schema={...schema,cache_mode:z.enum(['full','reference']).default('full')};
     server.registerTool(name, {
       description, inputSchema: z.object(schema),
-      annotations: { readOnlyHint: readOnly, destructiveHint: false, openWorldHint: false }
+      annotations: { readOnlyHint: readOnly, destructiveHint: name==='memory_delete', openWorldHint: false }
     }, async args => {
       try {
-        const value = await action(args);
+        const hit=args.cache_mode==='reference'?responseCache.lookup(name,args):null;
+        let value=hit?{cached:true,ref:hit.ref,scope:'this_mcp_session',next:'Já entregue nesta sessão; resolve_cached_ref recupera se saiu do contexto.'}:await action(args);
+        if(args.cache_mode==='reference'&&!hit){const entry=responseCache.save(name,args,value);if(entry&&value&&typeof value==='object')value={...value,cache_ref:entry.ref};}
         const response = json(value);
         if (args.project_id) {try{store.metric(args.project_id,name,response.content[0].text);}catch{response._meta={telemetry_warning:'Operação concluída; métrica indisponível.'};}}
         return response;
@@ -136,18 +144,19 @@ export function createServer(store) {
   tool('project_rule_set', 'Registra ou revisa uma regra específica autorizada para este projeto. Conteúdo não substitui controles do cliente nem instruções do usuário.', {
     ...recordFields, content: z.string().min(1).max(6000), status: z.enum(['active', 'retired']).default('active')
   }, false, args => write(store, args, 'rule', args.status));
-  tool('get_task_briefing', 'Triagem inicial enxuta: tarefa, decisões e fontes pertinentes; não escolhe modelo nem inventa implementação.', {
+  tool('get_task_briefing', 'Triagem inicial com contexto e recomendação consultiva de worker/modelo; não altera o host nem inventa implementação.', {
     project_id: project, task: z.string().min(1).max(1000), task_id: z.string().uuid().optional(),
-    agent: z.string().max(120).optional(), phase: z.enum(['explore', 'plan', 'architecture', 'implement', 'test', 'debug', 'review', 'final_review']).default('explore'), budget
+    agent: z.string().max(120).optional(), phase: z.enum(['explore', 'plan', 'architecture', 'implement', 'test', 'debug', 'review', 'final_review']).optional(), risk:z.enum(['normal','high','critical']).optional(),complexity:z.enum(['P','M','G']).optional(),unavailable_workers:z.array(z.string()).max(100).default([]), budget
   }, true, async args => {
     const active = args.task_id ? [requireTask(store, args.project_id, args.task_id)] : [];
     const decisions = store.search(args.project_id, args.task, 3, 'decision').filter(row => row.status === 'accepted');
     const rows = [...active, ...decisions, ...(await retrieve(store,args.project_id,args.task,{limit:5})).rows];
     const ids = new Set();
+      const dispatch = recommendDispatch(store,args);
     return { ...pack(rows.filter(row => !ids.has(row.id) && ids.add(row.id)), { budget: args.budget, query: args.task }),
-      phase: args.phase, rule_tool: 'get_operating_rules',
+      dispatch, phase: dispatch.phase, rule_tool: 'get_operating_rules',
       next: args.task_id ? 'task_resume com o task_id explícito antes de continuar.' : 'Se for trabalho significativo, procure a tarefa existente ou crie com task_update cedo.',
-      limits: 'Não há dispatcher de modelos nem revisão independente automática. Referências AST são sintáticas para JS/TS.' };
+      limits: 'Roteamento consultivo usa perfis registrados; execução e revisão independente dependem do host. get_symbol_context resolve tipos/imports de arquivos locais atuais.' };
   });
   tool('task_checkpoint', 'Salva estado por unidade de trabalho. Primeiro checkpoint sem expected_revision; posteriores exigem a revisão atual.', {
     project_id: project, task_id: z.string().uuid(), expected_revision: z.number().int().positive().optional(),
@@ -169,9 +178,9 @@ export function createServer(store) {
   tool('search_decisions', 'Busca decisões por intenção. Por padrão, somente accepted; superseded aparece apenas quando solicitado.', {
     project_id: project, query: z.string().min(1).max(1000), include_inactive: z.boolean().default(false), budget
   }, true, args => pack(store.search(args.project_id, args.query, 30, 'decision').filter(row => args.include_inactive || row.status === 'accepted'), { budget: args.budget, query: args.query }));
-  tool('get_code_references', 'Localiza código por busca lexical, confirma hash atual e retorna linhas. Não é AST nem prova de execução.', {
+  tool('get_code_references', 'Localiza código com hashes atuais e linhas, mais TypeChecker para aliases, imports e chamadas JS/TS entre arquivos. Não comprova execução.', {
     project_id: project, topic: z.string().min(1).max(1000), limit: z.number().int().min(1).max(10).default(6)
-  }, true, args => codeReferences(store, args.project_id, args.topic, args.limit));
+  }, true, async args => ({...await codeReferences(store,args.project_id,args.topic,args.limit),typed:await typedContext(store,args.project_id,{symbol:args.topic,limit:args.limit})}));
   tool('memory_store', 'Memória durável por namespace/chave, separada de tarefas e checkpoints. Atualização exige expected_revision.', {
     project_id: project, namespace: z.enum(['patterns', 'notes']), key: z.string().min(1).max(160),
     value: z.string().min(1).max(30000), evidence: z.array(z.string().max(2000)).max(30).default([]),
@@ -184,7 +193,9 @@ export function createServer(store) {
   tool('memory_search', 'Busca por tema em padrões/notas antes de criar uma entrada duplicada.', {
     project_id: project, query: z.string().min(1).max(1000), namespace: z.enum(['patterns', 'notes']).optional(), budget
   }, true, args => pack(memorySearch(store, args.project_id, args.query, args.namespace), args));
+  tool('resolve_cached_ref','Recupera resposta entregue anteriormente nesta sessão MCP, com verificação de revisão e orçamento; referências de outro cliente/restart são recusadas.',{project_id:project.optional(),ref:z.string().uuid(),budget},true,args=>responseCache.resolve(args.project_id,args.ref,args.budget));
   registerExtendedTools(tool,store);
+  registerGapTools(tool,store);
   return server;
 }
 

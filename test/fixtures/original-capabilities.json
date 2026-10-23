@@ -1,0 +1,33 @@
+{
+  "captured_at": "2026-10-23",
+  "tools": [
+    "search_knowledge",
+    "get_task_briefing",
+    "get_design_guidance",
+    "get_react_view_transitions",
+    "get_ecosystem_context",
+    "get_project_context",
+    "get_module_context",
+    "search_decisions",
+    "check_architecture_conflicts",
+    "find_related_knowledge",
+    "get_code_references",
+    "get_dependency_context",
+    "knowledge_status",
+    "analyze_knowledge_drift",
+    "propose_knowledge_patch",
+    "validate_knowledge_patch",
+    "memory_store",
+    "memory_search",
+    "memory_retrieve",
+    "memory_list",
+    "memory_delete",
+    "memory_feedback",
+    "memory_status",
+    "task_checkpoint",
+    "task_handoff",
+    "task_resume",
+    "security_audit",
+    "resolve_cached_ref"
+  ]
+}
