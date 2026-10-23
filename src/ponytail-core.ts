@@ -1,23 +1,32 @@
 /** Own implementation inspired by Ponytail's reuse-first method. No host hooks or external skill execution. */
 export interface EngineeringSource { path: string; content: string; hash: string; }
 export interface EngineeringArgs {
-  task: string; mode?: 'plan' | 'review' | 'debt'; level?: 'lite' | 'full' | 'ultra';
+  task: string; mode?: 'plan' | 'review' | 'debt' | 'audit' | 'help' | 'gain'; level?: 'lite' | 'full' | 'ultra' | 'off';
+  target?: 'auto' | 'uncommitted' | 'staged' | 'last_commit' | 'branch' | 'patch'; base?: string; patch?: string; marker?: string; snapshot_id?: string; report?: Record<string, unknown>;
   paths?: string[]; limit?: number; offset?: number;
 }
-export const ENGINEERING_VERSION = '1.0.0';
+export const ENGINEERING_VERSION = '2.0.0';
 const common = new Set('como para com uma que por dos das the and this that from use using implementar criar corrigir revisar arquivo função funcao código codigo'.split(' '));
 const fold = (text: string) => text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 
 export function validateEngineeringArgs(raw: Record<string, unknown>): EngineeringArgs {
-  const allowed = new Set(['task','mode','level','paths','limit','offset','workspace']);
+  const allowed = new Set(['task','mode','level','paths','limit','offset','workspace','target','base','patch','marker','snapshot_id','report']);
   if (Object.keys(raw).some(key=>!allowed.has(key))) throw new Error('Argumento desconhecido.');
   if (typeof raw.task!=='string'||!raw.task.trim()||raw.task.length>4000) throw new Error('task obrigatória, máximo 4000 caracteres.');
-  if (raw.mode!==undefined&&!['plan','review','debt'].includes(String(raw.mode))) throw new Error('mode inválido.');
-  if (raw.level!==undefined&&!['lite','full','ultra'].includes(String(raw.level))) throw new Error('level inválido.');
+  if (raw.mode!==undefined&&!['plan','review','debt','audit','help','gain'].includes(String(raw.mode))) throw new Error('mode inválido.');
+  if (raw.level!==undefined&&!['lite','full','ultra','off'].includes(String(raw.level))) throw new Error('level inválido.');
   if (raw.workspace!==undefined&&!['app','mcp'].includes(String(raw.workspace))) throw new Error('workspace inválido.');
   if(raw.paths!==undefined&&(!Array.isArray(raw.paths)||raw.paths.length>30||raw.paths.some(p=>typeof p!=='string'||!p||p.length>500||p.includes('\\')||p.startsWith('/')||p.split('/').includes('..')||/^[A-Za-z]:/.test(p)))) throw new Error('paths devem ser relativos à raiz autorizada, sem traversal.');
   if(raw.limit!==undefined&&(!Number.isInteger(raw.limit)||Number(raw.limit)<1||Number(raw.limit)>30))throw new Error('limit deve ser 1–30.');
   if(raw.offset!==undefined&&(!Number.isSafeInteger(raw.offset)||Number(raw.offset)<0))throw new Error('offset inválido.');
+  if(raw.target!==undefined&&!['auto','uncommitted','staged','last_commit','branch','patch'].includes(String(raw.target)))throw new Error('target inválido.');
+  if(raw.base!==undefined&&(typeof raw.base!=='string'||raw.base.length>200||!/^[A-Za-z0-9_][A-Za-z0-9_./-]*$/.test(raw.base)||raw.base.includes('..')))throw new Error('base deve ser ref Git simples.');
+  if(raw.patch!==undefined&&(typeof raw.patch!=='string'||raw.patch.length>200000))throw new Error('patch máximo 200000 caracteres.');
+  if(raw.target==='patch'&&typeof raw.patch!=='string')throw new Error('target patch exige patch obtido pelo host.');
+  if(raw.target==='branch'&&!raw.base)throw new Error('target branch exige base explícita.');
+  if(raw.marker!==undefined&&(typeof raw.marker!=='string'||! /^[A-Za-z][A-Za-z0-9_-]{0,31}$/.test(raw.marker)))throw new Error('marker inválido.');
+  if(raw.snapshot_id!==undefined&&(typeof raw.snapshot_id!=='string'||!/^[a-f0-9]{64}$/.test(raw.snapshot_id)))throw new Error('snapshot_id inválido.');
+  if(raw.report!==undefined&&(!raw.report||typeof raw.report!=='object'||Array.isArray(raw.report)||JSON.stringify(raw.report).length>100000))throw new Error('report inválido ou grande demais.');
   return raw as unknown as EngineeringArgs;
 }
 

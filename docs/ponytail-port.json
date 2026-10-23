@@ -1,9 +1,15 @@
 {
   "method": "own_implementation_inspired_by_ponytail",
-  "engine_version": "1.0.0",
+  "engine_version": "2.0.0",
+  "upstream_version_reviewed": "5.3.2",
   "first_implementation": "original_mcp",
   "source": "src/ponytail-core.ts",
-  "source_sha256": "e03fea47c32aa3ad501268ac4c8749c19150ca10f8e932daded0e2d4797421c8",
+  "source_sha256": "202be63ed3eb463a3ffaa459f10234813a3e31693bcbeaf204986aaabc497c59",
+  "modules_sha256": {
+    "ponytail-core": "202be63ed3eb463a3ffaa459f10234813a3e31693bcbeaf204986aaabc497c59",
+    "ponytail-git": "965db59aca8fda625c89d49537b7fb8ea65f398d457d3ea9b6f24c1e36d2e9c7",
+    "ponytail-workflow": "9a7f81eca2dbe18a31662935ebf645be764780ce5b6d8b5a95bb7a1c43c213b5"
+  },
   "transpiler": "typescript@5.9.3",
   "upstream_reference": "https://github.com/DietrichGebert/ponytail",
   "copies_upstream_plugin": false

@@ -1,4 +1,4 @@
-# Conexões dos agentes — 1.0.0-rc.4
+# Conexões dos agentes — 1.0.0-rc.5
 
 O cliente MCP inicia `node <caminho absoluto>/src/cli.js serve --data <base absoluta>`. Todos os clientes que precisam compartilhar conhecimento devem usar a mesma base. A ferramenta não altera o provedor de IA nem exige uma API de modelo para funcionar.
 

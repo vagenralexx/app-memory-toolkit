@@ -1,4 +1,4 @@
-# Matriz de capacidades — 1.0.0-rc.4
+# Matriz de capacidades — 1.0.0-rc.5
 
 Escopo: as 28 ferramentas observadas em tools/list do MCP de referência em 23/10/2026. Todas têm um equivalente funcional na ferramenta independente. Isso não significa cópia de contratos, bases, defaults específicos ou implementação interna. Total do produto novo: 63 ferramentas. A ferramenta adicional get_ponytail_guidance está descrita em PONYTAIL.md.
 

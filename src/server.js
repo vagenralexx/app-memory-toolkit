@@ -163,7 +163,7 @@ export function createServer(store) {
     summary: z.string().min(1).max(12000), next_action: z.string().min(1).max(4000),
     completed: z.array(z.string().max(1000)).max(50).default([]), open_issues: z.array(z.string().max(1000)).max(50).default([]),
     evidence: z.array(z.string().max(1000)).max(50).default([]), branch: z.string().max(500).default('n/a'), head: z.string().max(120).default('n/a'),
-    changed_files: z.array(z.string().max(1000)).max(100).default([])
+    changed_files: z.array(z.string().max(1000)).max(100).default([]),engineering:z.record(z.string(),z.unknown()).optional()
   }, false, args => checkpoint(store, args));
   tool('task_resume', 'Retoma exclusivamente a tarefa identificada neste projeto; entrega checkpoint/handoff e IDs para expansão.', {
     project_id: project, task_id: z.string().uuid()

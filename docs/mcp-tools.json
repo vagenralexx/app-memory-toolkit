@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-rc.4",
+  "version": "1.0.0-rc.5",
   "tools": [
     {
       "name": "start_project",
@@ -1016,6 +1016,13 @@
               "type": "string",
               "maxLength": 1000
             }
+          },
+          "engineering": {
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {}
           }
         },
         "required": [
@@ -2090,7 +2097,7 @@
     },
     {
       "name": "get_ponytail_guidance",
-      "description": "Engenharia reuse-first inspirada no Ponytail: candidatos de reutilização/impacto, roteiro de revisão e atalhos documentados com gatilho. Somente leitura, sem aprovação automática, hooks ou fila paralela.",
+      "description": "Engenharia reuse-first inspirada no Ponytail: reuso, diff local/staged/commit/branch/patch, auditoria de qualidade, relatório vinculado ao snapshot, dívida e métricas existentes. Somente leitura, sem aprovação automática, hooks ou fila paralela.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -2110,17 +2117,54 @@
             "enum": [
               "plan",
               "review",
-              "debt"
+              "debt",
+              "audit",
+              "help",
+              "gain"
             ]
           },
           "level": {
-            "default": "full",
             "type": "string",
             "enum": [
               "lite",
               "full",
-              "ultra"
+              "ultra",
+              "off"
             ]
+          },
+          "target": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "uncommitted",
+              "staged",
+              "last_commit",
+              "branch",
+              "patch"
+            ]
+          },
+          "base": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "patch": {
+            "type": "string",
+            "maxLength": 200000
+          },
+          "marker": {
+            "type": "string",
+            "maxLength": 32
+          },
+          "snapshot_id": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "report": {
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {}
           },
           "paths": {
             "maxItems": 30,

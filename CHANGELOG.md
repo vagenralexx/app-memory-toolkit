@@ -1,5 +1,14 @@
 # Histórico
 
+## 1.0.0-rc.5
+
+- Ampliação Ponytail primeiro no MCP original: seleção de diff, auditoria de qualidade, relatório com âncoras e snapshot, gatilhos/custom markers e preferências persistentes.
+- Mesmo núcleo portado com SHA/transpilação reproduzíveis. Manteve 63 ferramentas: ampliação da ferramenta existente, sem criar servidor, ledger, dashboard ou configuração concorrente.
+- Reuso de memória, backlog, scanner, telemetria e checkpoints; observações opcionais de reuso/checks/uso do host ficam no checkpoint canônico.
+- Contrato compartilhado em skill distribuível e nas instruções de setup/boot. PR usa conector do host; MCP não busca rede nem executa checks/código do app.
+- Dados ausentes permanecem desconhecidos. Não transfere percentuais do benchmark nem declara revisão independente automática.
+
+
 ## 1.0.0-rc.4 — 2026-10-23
 
 - get_ponytail_guidance: planejamento por reutilização, roteiro de revisão e dívida por comentários, somente leitura e sem hooks.

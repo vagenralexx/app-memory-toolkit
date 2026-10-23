@@ -1,3 +1,4 @@
+import {validateEngineeringObservation} from './ponytail-workflow.js';
 import { feedbackScore } from './memory-quality.js';
 import { present } from './store.js';
 import { queryTerms } from './text.js';
@@ -24,6 +25,7 @@ export function checkTaskDependencies(store,projectId,taskId,dependencies) {
 }
 
 export function checkpoint(store, args) {
+  if(args.engineering!==undefined)validateEngineeringObservation(args.engineering);
   requireTask(store, args.project_id, args.task_id);
   return store.transaction(() => {
     const old = store.db.prepare('SELECT record_id FROM task_checkpoints WHERE project_id=? AND task_id=?').get(args.project_id, args.task_id);
