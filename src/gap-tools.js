@@ -7,8 +7,12 @@ import { typedContext } from './type-intelligence.js';
 import { reactTransitions } from './design-corpus.js';
 import { saveConstraint,RULE_KINDS } from './architecture.js';
 import { onboardingState } from './analysis.js';
+import { ponytailGuidance } from './ponytail-guidance.js';
 export function registerGapTools(tool,store){
  const project=z.string().uuid(),namespace=z.enum(['patterns','notes']).default('patterns'),budget=z.number().int().min(300).max(50000).default(2000),page={limit:z.number().int().min(1).max(100).default(50),offset:z.number().int().min(0).default(0)};
+ tool('get_ponytail_guidance','Engenharia reuse-first inspirada no Ponytail: candidatos de reutilização/impacto, roteiro de revisão e atalhos documentados com gatilho. Somente leitura, sem aprovação automática, hooks ou fila paralela.',{
+   project_id:project,task:z.string().min(1).max(4000),mode:z.enum(['plan','review','debt']).default('plan'),level:z.enum(['lite','full','ultra']).default('full'),paths:z.array(z.string().min(1).max(500)).max(30).optional(),limit:z.number().int().min(1).max(30).default(8),offset:z.number().int().min(0).default(0)
+ },true,args=>ponytailGuidance(store,args.project_id,args));
  tool('memory_list','Lista metadados de memória com paginação, sem carregar valores; padrões e notas isolados por projeto.',{project_id:project,namespace:namespace.optional(),include_inactive:z.boolean().default(false),...page},true,a=>listMemory(store,a.project_id,a));
  tool('memory_status','Contagens de memória e feedback por projeto, sem valores; informa inferência local e natureza dos resultados declarados.',{project_id:project},true,a=>memoryStats(store,a.project_id));
  tool('memory_delete','Retira memória com revisão. purge=true exclui registro/histórico da base após snapshot; backups anteriores preservam o conteúdo.',{project_id:project,namespace,key:z.string().min(1).max(160),expected_revision:z.number().int().positive(),purge:z.boolean().default(false)},false,a=>deleteMemory(store,a));

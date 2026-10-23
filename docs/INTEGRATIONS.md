@@ -1,4 +1,4 @@
-# Conexões dos agentes — 1.0.0-rc.3
+# Conexões dos agentes — 1.0.0-rc.4
 
 O cliente MCP inicia `node <caminho absoluto>/src/cli.js serve --data <base absoluta>`. Todos os clientes que precisam compartilhar conhecimento devem usar a mesma base. A ferramenta não altera o provedor de IA nem exige uma API de modelo para funcionar.
 
@@ -59,6 +59,6 @@ app-memory doctor --data "D:\AppMemory\base"
 app-memory projects --data "D:\AppMemory\base"
 ```
 
-Depois de instalar, recarregue a sessão/conexão no cliente. Verifique a presença das 62 ferramentas, `project_list`, leitura de um checkpoint escrito por outro cliente e recusa de revisão obsoleta. Código/configuração testados por SDK e parsers não substituem um teste de interface, login e modelo no aplicativo final.
+Depois de instalar, recarregue a sessão/conexão no cliente. Verifique a presença das 63 ferramentas, `project_list`, leitura de um checkpoint escrito por outro cliente e recusa de revisão obsoleta. Código/configuração testados por SDK e parsers não substituem um teste de interface, login e modelo no aplicativo final.
 
 Para gerar tudo sem instalar: `integration-export --output <pasta vazia>`. Os exemplos contêm caminhos da máquina atual; gere novamente em outra instalação.

@@ -1,0 +1,10 @@
+{
+  "method": "own_implementation_inspired_by_ponytail",
+  "engine_version": "1.0.0",
+  "first_implementation": "original_mcp",
+  "source": "src/ponytail-core.ts",
+  "source_sha256": "e03fea47c32aa3ad501268ac4c8749c19150ca10f8e932daded0e2d4797421c8",
+  "transpiler": "typescript@5.9.3",
+  "upstream_reference": "https://github.com/DietrichGebert/ponytail",
+  "copies_upstream_plugin": false
+}

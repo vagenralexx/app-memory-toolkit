@@ -1,5 +1,12 @@
 # Histórico
 
+## 1.0.0-rc.4 — 2026-10-23
+
+- get_ponytail_guidance: planejamento por reutilização, roteiro de revisão e dívida por comentários, somente leitura e sem hooks.
+- Núcleo portátil implementado e validado primeiro no MCP original; adaptador novo reutiliza scanner e backlog do App Memory.
+- Candidatos com arquivo/linha/hash, escopo, paginação e cobertura explícita. Nenhuma aprovação automática ou fila paralela.
+- Teste de proveniência e transpilação evita divergência silenciosa do núcleo portado. Total63 ferramentas MCP.
+
 ## 1.0.0-rc.3 — 2026-10-23
 
 - Cobertura das 28 capacidades do catálogo de referência, com contratos próprios e matriz verificável.

@@ -17,6 +17,7 @@ export const BASE_RULES = [
 ];
 
 export const SERVER_INSTRUCTIONS = `App Memory Toolkit: memória local de vários projetos, compartilhável entre clientes MCP.
+Engenharia reuse-first: get_ponytail_guidance(task,mode=plan/review/debt,project_id) retorna candidatos de reutilização, impacto e atalhos para conferência. Use antes de criar abstrações/dependências ou revisar simplificações. A ferramenta não executa revisão/testes, não ativa plugin/hooks nem grava backlog; requisitos, segurança, validações e acessibilidade prevalecem sobre reduzir linhas. Pendências confirmadas seguem task_list/task_update, sem ledger paralelo.
 Quando o usuário disser "vamos usar App Memory", "usar app-memory" ou "usar este MCP", chamar start_project(root=pasta absoluta autorizada) antes de implementar. Seguir as perguntas e next_tools. Nunca usar o cwd do servidor como pasta do app. project_prepare adiciona organização em pastas existentes, prévia por padrão. O banco SQLite do MCP é separado do banco do app; confirmar dados, entidades, permissões, migrações e backup antes de escolher tecnologia.
 Início alternativo: project_list -> get_operating_rules -> get_task_briefing. Projeto novo: onboarding_questions -> project_register -> project_scaffold (prévia). App existente: project_register(mode=existing) -> project_index.
 Tarefa significativa: task_update cedo -> task_resume -> consultas -> task_checkpoint -> task_handoff. O task_id é sempre explícito e pertence ao project_id; não há herança automática entre conversas. Não inventar metadata do host.

@@ -1,6 +1,8 @@
-# App Memory Toolkit — 1.0.0-rc.3
+# App Memory Toolkit — 1.0.0-rc.4
 
 **Capacidades:** consulte a [matriz das 28 capacidades de referência](docs/CAPABILITIES.md) e os [novos contratos](docs/GAP-CLOSURE.md).
+
+**Engenharia reuse-first:** [get_ponytail_guidance](docs/PONYTAIL.md) ajuda a procurar reuso, mapear impacto e conferir atalhos sem duplicar backlog.
 
 **Instalar pelo agente:** veja [INSTALL.md](INSTALL.md), com o pedido pronto para copiar. Depois de instalado, peça “Vamos usar o App Memory neste projeto”; o início é `start_project` com a raiz absoluta.
 
@@ -25,7 +27,7 @@ node src/cli.js wizard --data "D:\AppMemory\base"
 Para instalar o pacote distribuído em outra pasta/máquina com Node.js:
 
 ```powershell
-npm install --global "C:\caminho\app-memory-toolkit-1.0.0-rc.3.tgz" --ignore-scripts
+npm install --global "C:\caminho\app-memory-toolkit-1.0.0-rc.4.tgz" --ignore-scripts
 app-memory wizard --data "D:\AppMemory\base"
 ```
 
@@ -36,7 +38,7 @@ O pacote inclui o código e as dependências travadas por `npm-shrinkwrap.json`;
 - Questionário de 13 perguntas e retomada das respostas.
 - App novo: prévia, estrutura, `APP_MEMORY.md`, `AGENTS.md`, importação para `CLAUDE.md` e `.app-memory.json` com identidade e exclusões.
 - App existente: inventário, linguagens, manifestos, dependências declaradas, módulos e perguntas pendentes, sem executar o código nem reorganizar a pasta.
-- 62 ferramentas MCP; política central na inicialização, regras por projeto e memória isolada por projeto.
+- 63 ferramentas MCP; política central na inicialização, regras por projeto e memória isolada por projeto.
 - Busca por chunks com BM25, embeddings locais opcionais, fusão RRF, reranking, deduplicação e limite por documento.
 - Referências com origem, hash, revisão, seção e linhas; níveis `summary/detail/raw`.
 - Índice sintático de funções/classes/interfaces/importações e chamadas para JS/TS/JSX/TSX. Outros formatos continuam pesquisáveis como texto.

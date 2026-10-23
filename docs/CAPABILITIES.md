@@ -1,6 +1,6 @@
-# Matriz de capacidades — 1.0.0-rc.3
+# Matriz de capacidades — 1.0.0-rc.4
 
-Escopo: as 28 ferramentas observadas em tools/list do MCP de referência em 23/10/2026. Todas têm um equivalente funcional na ferramenta independente. Isso não significa cópia de contratos, bases, defaults específicos ou implementação interna. Total do produto novo: 62 ferramentas.
+Escopo: as 28 ferramentas observadas em tools/list do MCP de referência em 23/10/2026. Todas têm um equivalente funcional na ferramenta independente. Isso não significa cópia de contratos, bases, defaults específicos ou implementação interna. Total do produto novo: 63 ferramentas. A ferramenta adicional get_ponytail_guidance está descrita em PONYTAIL.md.
 
 | Capacidade de referência | Adaptação implementada | Evidência de teste |
 | --- | --- | --- |
@@ -40,3 +40,4 @@ O roteamento do próprio original é advisoryOnly/changesHostModel:false; não s
 As diferenças intencionais incluem projeto explícito, tarefas fora do namespace de memória, revisão em mutações, retirada reversível por padrão e purge com snapshot. Não há compatibilidade drop-in dos argumentos. A base privada do app anterior não é distribuída.
 
 Limites e procedimentos: [GAP-CLOSURE.md](GAP-CLOSURE.md). O catálogo JSON real é [mcp-tools.json](mcp-tools.json).
+
