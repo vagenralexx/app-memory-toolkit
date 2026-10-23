@@ -1,0 +1,18 @@
+{
+  "version": "1.0.0-rc.2",
+  "repository": "https://github.com/vagenralexx/app-memory-toolkit",
+  "download": "gh repo clone",
+  "installation": "npm ci --ignore-scripts --offline",
+  "setup_preview": "PASS",
+  "setup_apply": "PASS",
+  "existing_instructions": "preserved",
+  "mcp_connection": "real stdio process from generated Codex config",
+  "tools": 46,
+  "start_existing": "PASS",
+  "onboarding": "PASS",
+  "organization_preview_apply": "PASS",
+  "source_readme": "preserved",
+  "index": "PASS",
+  "start_registered": "PASS",
+  "actual_codex_app_session": "not_reloaded"
+}
