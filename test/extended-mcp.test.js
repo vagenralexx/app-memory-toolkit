@@ -1,0 +1,45 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { mkdtemp,mkdir,writeFile,readFile } from 'node:fs/promises';
+import { join,resolve } from 'node:path';
+import { tmpdir } from 'node:os';
+import { Client } from '@modelcontextprotocol/client';
+import { StdioClientTransport } from '@modelcontextprotocol/client/stdio';
+
+test('MCP estendido: onboarding, módulos, dependências, relações, ciclos, drift, exportação e diagnóstico', {timeout:30000},async t=>{
+  const root=await mkdtemp(join(process.env.APP_MEMORY_TEST_TMP??tmpdir(),'app-memory-extended-')),app=join(root,'app');await mkdir(join(app,'src'),{recursive:true});
+  await writeFile(join(app,'src','auth.ts'),'export function renewSession() { return true; }\nrenewSession();');
+  await writeFile(join(app,'package.json'),JSON.stringify({name:'base',dependencies:{react:'19.0.0'}}));
+  await writeFile(join(app,'guide.md'),'# Guia\nTexto antigo.');
+  const client=new Client({name:'extended-tests',version:'1'});
+  await client.connect(new StdioClientTransport({command:process.execPath,args:[resolve('src/cli.js'),'serve','--data',join(root,'data')],stderr:'pipe'}));t.after(()=>client.close());
+  async function call(name,args={},expectedError=false){const r=await client.callTool({name,arguments:args});assert.equal(Boolean(r.isError),expectedError,JSON.stringify(r));return JSON.parse(r.content[0].text);}
+  const project=await call('project_register',{name:'Base',root:app,mode:'existing'}),p={project_id:project.id};
+  assert.equal((await call('onboarding_resume',p)).missing_required.length,4);
+  const analysis=await call('project_analyze',p);assert.equal(analysis.inventory.analysis.languages.TypeScript,1);
+  const updated=await call('project_update',{...p,expected_revision:1,answers:{purpose:'Organizar dados'}});assert.equal(updated.revision,2);
+  assert.ok((await call('get_module_context',p)).modules.length);
+  assert.equal((await call('get_dependency_context',p)).dependencies[0].name,'react');
+  const code=await call('get_code_references',{...p,topic:'renewSession'});assert.equal(code.structural_index_available,true);assert.equal(code.results[0].references[0].line,2);
+  const fields={...p,content:'Executar e validar.',acceptance:['Critério atendido'],status:'in_progress'};
+  const a=await call('task_update',{...fields,title:'A',priority:'P0'});
+  const b=await call('task_update',{...fields,title:'B',depends_on:[a.id]});
+  await call('task_update',{...fields,id:a.id,expected_revision:1,title:'A',depends_on:[b.id]},true);
+  await call('task_update',{...fields,id:b.id,expected_revision:1,title:'B',status:'done',evidence:['Relato'],acceptance_met:true},true);
+  const complete=await call('task_update',{...fields,title:'C',status:'done',evidence:['Relato'],acceptance_met:true});
+  const first=await call('task_list',{...p,limit:1});assert.equal(first[0].id,a.id);
+  const next=await call('task_list',{...p,limit:1,offset:1});assert.equal(next[0].id,b.id);
+  const decision=await call('decision_record',{...p,title:'Arquitetura local',content:'Manter dados em armazenamento local.',status:'accepted'});
+  await call('record_link',{...p,source_id:a.id,target_id:decision.id,relation:'related_to'});
+  const related=await call('find_related_knowledge',{...p,id:a.id});assert.equal(related.results[0].id,decision.id);
+  assert.equal((await call('check_architecture_conflicts',{...p,intent:'armazenamento local'})).verdict,'REVIEW_REQUIRED');
+  assert.equal((await call('get_design_guidance',{...p,topic:'Formulário'})).classification,'GUIDE_REFERENCE');
+  assert.equal((await call('semantic_index',p)).enabled,false);
+  const proposal=await call('propose_knowledge_patch',{...p,path:'guide.md',before:'Texto antigo.',after:'Texto revisado.',reason:'Confirmado'});
+  assert.equal((await call('validate_knowledge_patch',{...p,id:proposal.id})).valid,true);
+  assert.equal(await readFile(join(app,'guide.md'),'utf8'),'# Guia\nTexto antigo.');
+  assert.equal((await call('analyze_knowledge_drift',{...p,limit:1})).next_offset,1);
+  const exported=await call('project_export',p);assert.ok(exported.records>3);
+  const backup=await call('memory_backup');assert.equal(backup.consistent,true);
+  assert.equal((await call('diagnose',p)).ok,true);
+});

@@ -1,0 +1,34 @@
+{
+  "documents": [
+    {"id":"auth","title":"Sessões","content":"A autenticação exige uma conta. renewSession renova o acesso quando o JWT expira. Nunca conceder permissão sem validar o usuário."},
+    {"id":"payments","title":"Conciliação","content":"O módulo financeiro concilia faturas e pagamentos. A liquidação registra o valor pago pelo cliente e baixa o saldo em aberto."},
+    {"id":"offline","title":"Cache local","content":"A persistência local mantém cópias dos registros no dispositivo. Alterações feitas durante desconexão ficam em fila até sincronizar novamente."},
+    {"id":"backup","title":"Recuperação","content":"Snapshots consistentes do SQLite permitem restaurar os registros após falha de disco. A restauração exige uma pasta vazia e preserva os identificadores."},
+    {"id":"ui","title":"Acessibilidade","content":"A navegação por teclado preserva foco visível. Formulários exibem rótulos e mensagens de erro. Textos compridos não devem provocar overflow horizontal."},
+    {"id":"secrets","title":"Proteção","content":"Arquivos de credenciais e variáveis de ambiente ficam fora da indexação. Chaves privadas e senhas não podem ser gravadas na memória do projeto."},
+    {"id":"task","title":"Continuidade","content":"O checkpoint guarda a unidade de trabalho atual. Um handoff imutável descreve resultados, evidências, pendências e próxima ação para outro agente."},
+    {"id":"search","title":"Recuperação de contexto","content":"A busca combina BM25 e vetores semânticos com fusão RRF. Cada trecho mantém origem e revisão; expandir detalhes só quando o resumo não basta."}
+  ],
+  "queries": [
+    {"query":"renewSession","expected":"auth","split":"calibration"},
+    {"query":"confirmar dinheiro recebido do comprador","expected":"payments","split":"calibration"},
+    {"query":"continuar trabalhando sem internet","expected":"offline","split":"calibration"},
+    {"query":"recuperar dados depois de uma pane no armazenamento","expected":"backup","split":"calibration"},
+    {"query":"usar a tela sem o mouse","expected":"ui","split":"calibration"},
+    {"query":"evitar que informações confidenciais entrem na base","expected":"secrets","split":"calibration"},
+    {"query":"passar o serviço para outra inteligência artificial","expected":"task","split":"calibration"},
+    {"query":"encontrar documentação pelo significado","expected":"search","split":"calibration"},
+    {"query":"fotossíntese de árvores tropicais","expected":null,"split":"calibration"},
+    {"query":"qual a previsão do tempo amanhã","expected":null,"split":"calibration"},
+    {"query":"A expiração do JWT deve encerrar ou renovar o acesso?","expected":"auth","split":"validation"},
+    {"query":"Como dar baixa em faturas que já foram pagas?","expected":"payments","split":"validation"},
+    {"query":"O que é salvo durante desconexão?","expected":"offline","split":"validation"},
+    {"query":"Como restaurar um snapshot SQLite?","expected":"backup","split":"validation"},
+    {"query":"Como impedir overflow em formulários?","expected":"ui","split":"validation"},
+    {"query":"Quais arquivos de senha devem ficar fora da indexação?","expected":"secrets","split":"validation"},
+    {"query":"O que registrar antes de trocar de agente?","expected":"task","split":"validation"},
+    {"query":"Quando expandir detalhes do contexto?","expected":"search","split":"validation"},
+    {"query":"Qual é a cotação do dólar agora?","expected":null,"split":"validation"},
+    {"query":"Qual receita de bolo de chocolate?","expected":null,"split":"validation"}
+  ]
+}

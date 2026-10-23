@@ -1,0 +1,10 @@
+node_modules/
+.app-memory/
+*.tgz
+coverage/
+.env
+.env.*
+!.env.example
+*.sqlite*
+models/
+*.tmp

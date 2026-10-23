@@ -1,0 +1,15 @@
+{
+  "purpose": "Organizar pedidos e acompanhar entregas de uma pequena equipe.",
+  "audience": "Atendentes e gestores.",
+  "platforms": "Web responsiva, acessível por desktop e celular.",
+  "mvp": "Cadastrar pedido, consultar fila e atualizar situação da entrega.",
+  "journeys": "Atendente registra pedido; equipe acompanha a fila; gestor confirma entrega.",
+  "outOfScope": "Pagamentos e integração fiscal.",
+  "data": "Pedidos e contatos; avaliar retenção e acesso aos dados pessoais.",
+  "auth": "Login com papéis de atendente e gestor.",
+  "integrations": "Nenhuma no MVP.",
+  "stack": "A definir conforme requisitos e orçamento.",
+  "ui": "Interface acessível e responsiva; estilo a definir.",
+  "constraints": "Validar o fluxo com uma equipe antes de ampliar a distribuição.",
+  "acceptance": "Criar, consultar e concluir um pedido com permissões corretas e testes dos fluxos críticos."
+}

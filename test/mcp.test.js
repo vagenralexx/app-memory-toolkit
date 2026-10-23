@@ -1,0 +1,54 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { mkdtemp, mkdir, writeFile, readFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { resolve, join } from 'node:path';
+import { Client } from '@modelcontextprotocol/client';
+import { StdioClientTransport } from '@modelcontextprotocol/client/stdio';
+
+test('MCP real: conexão stdio, onboarding, indexação, tarefas, decisões e retomada', { timeout: 30000 }, async t => {
+  const root = await mkdtemp(join(process.env.APP_MEMORY_TEST_TMP ?? tmpdir(), 'app-memory-mcp-'));
+  const app = join(root, 'existing'); await mkdir(app);
+  await writeFile(join(app, 'README.md'), '# App de pedidos\nControle de entrega e clientes.');
+  const data = join(root, 'memory');
+  const transport = new StdioClientTransport({ command: process.execPath, args: [resolve('src/cli.js'), 'serve', '--data', data], stderr: 'pipe' });
+  const client = new Client({ name: 'app-memory-tests', version: '1.0.0' });
+  t.after(() => client.close());
+  await client.connect(transport);
+  const tools = await client.listTools();
+  assert.equal(tools.tools.length, 46);
+  async function call(name, args = {}, error = false) {
+    const response = await client.callTool({ name, arguments: args });
+    assert.equal(Boolean(response.isError), error, JSON.stringify(response));
+    return JSON.parse(response.content.find(item => item.type === 'text').text);
+  }
+  assert.ok((await call('onboarding_questions')).questions.length >= 10);
+  const project = await call('project_register', { name: 'Pedidos', root: app, mode: 'existing' });
+  assert.equal((await call('project_index', { project_id: project.id })).indexed, 1);
+  const found = await call('search_knowledge', { project_id: project.id, query: 'entrega' });
+  assert.equal(found.results.length, 1);
+  const raw = await call('resolve_reference', { project_id: project.id, id: found.results[0].id, mode: 'raw' });
+  assert.match(raw.results[0].content, /Controle de entrega/);
+  assert.equal(await readFile(join(app, 'README.md'), 'utf8'), '# App de pedidos\nControle de entrega e clientes.');
+  const fields = { project_id: project.id, title: 'Testar pedidos', content: 'Validar entrega', acceptance: ['Entrega aparece na lista'] };
+  await call('task_update', { ...fields, status: 'done' }, true);
+  const task = await call('task_update', fields);
+  const done = await call('task_update', { ...fields, id: task.id, expected_revision: task.revision, status: 'done', evidence: ['Teste de entrega passou: teste demonstrativo'], acceptance_met: true });
+  assert.equal(done.revision, 2);
+  await call('task_update', { ...fields, id: task.id, expected_revision: 1 }, true);
+  await call('decision_record', { project_id: project.id, title: 'Persistência', content: 'Avaliar armazenamento local.', status: 'proposed' });
+  await call('learning_record', { project_id: project.id, title: 'Fluxo', content: 'Entrega exige número do pedido.', evidence: ['Requisito relatado pelo responsável'] });
+  await call('handoff_write', { project_id: project.id, title: 'Retomar', content: 'Próxima etapa: validar permissões.' });
+  assert.match((await call('handoff_read', { project_id: project.id })).results[0].content, /permissões/);
+  assert.ok((await call('get_context', { project_id: project.id })).results.length);
+  const health = await call('knowledge_health', { project_id: project.id });
+  assert.ok(health.usage.some(row => row.operation === 'search_knowledge' && row.bytes_delivered > 0));
+  assert.equal((await call('task_list', { project_id: project.id, include_done: true }))[0].status, 'done');
+  assert.equal((await call('task_list', { project_id: project.id })).length, 0);
+  await client.close();
+  const second = new Client({ name: 'second-session', version: '1' });
+  t.after(() => second.close());
+  await second.connect(new StdioClientTransport({ command: process.execPath, args: [resolve('src/cli.js'), 'serve', '--data', data], stderr: 'pipe' }));
+  const resumed = await second.callTool({ name: 'project_list', arguments: {} });
+  assert.equal(JSON.parse(resumed.content[0].text)[0].id, project.id);
+});
