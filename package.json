@@ -1,6 +1,6 @@
 {
   "name": "app-memory-toolkit",
-  "version": "1.0.0-rc.5",
+  "version": "1.0.0-rc.6",
   "description": "Memória de desenvolvimento e onboarding para projetos novos e existentes, via CLI e MCP.",
   "type": "module",
   "private": true,

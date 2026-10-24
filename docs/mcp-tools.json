@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-rc.5",
+  "version": "1.0.0-rc.6",
   "tools": [
     {
       "name": "start_project",
@@ -2087,6 +2087,91 @@
             "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
           }
         },
+        "$schema": "https://json-schema.org/draft/2020-12/schema"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "get_founder_guidance",
+      "description": "Negócio/landing:11 módulos Founder, lacunas de briefing, custos/projeções, preços por origem, painel opcional reproduzível e relatório com fontes. Read-only, sem rede, agentes automáticos ou publicação; reutiliza onboarding/memória/backlog/design.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "task": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4000
+          },
+          "mode": {
+            "default": "landing",
+            "type": "string",
+            "enum": [
+              "board",
+              "competitors",
+              "consumer",
+              "pricing",
+              "offer",
+              "cfo",
+              "marketing",
+              "brand",
+              "ops",
+              "launch",
+              "plan",
+              "landing",
+              "help"
+            ]
+          },
+          "context": {
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {}
+          },
+          "inputs": {
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {}
+          },
+          "snapshot_id": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "report": {
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {}
+          },
+          "limit": {
+            "default": 8,
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 30
+          },
+          "offset": {
+            "default": 0,
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "project_id",
+          "task"
+        ],
         "$schema": "https://json-schema.org/draft/2020-12/schema"
       },
       "annotations": {

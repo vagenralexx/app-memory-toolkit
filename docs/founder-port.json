@@ -1,0 +1,10 @@
+{
+  "method": "own_implementation_inspired_by_founder_skill",
+  "engine_version": "1.0.0",
+  "first_implementation": "original_mcp",
+  "source": "src/founder-core.ts",
+  "source_sha256": "3c6d60b4e16e6b4ba251c51152665f9d1f7b09b74060d88f45ca258375e216e4",
+  "transpiler": "typescript@5.9.3",
+  "upstream_reference": "https://github.com/Jakeschincariol/founder-skill",
+  "copies_upstream_code_or_prompts": false
+}

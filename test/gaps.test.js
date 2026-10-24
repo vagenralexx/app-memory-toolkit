@@ -145,7 +145,7 @@ test('MCP real expõe28 capacidades originais, cache por cliente e os fluxos de 
  const {root,app}=await fixture(t);await writeFile(join(app,'README.md'),'# Base de teste');const data=join(root,'mcp-memory');
  async function connect(){const c=new Client({name:'gap-integration',version:'1'});await c.connect(new StdioClientTransport({command:process.execPath,args:[resolve('src/cli.js'),'serve','--data',data],stderr:'pipe'}));t.after(()=>c.close());return c;}
  const a=await connect(),b=await connect();const call=async(c,name,args)=>{const r=await c.callTool({name,arguments:args});assert.ok(!r.isError,JSON.stringify(r));return JSON.parse(r.content[0].text);};
- const tools=(await a.listTools()).tools.map(t=>t.name);assert.equal(tools.length,63);
+ const tools=(await a.listTools()).tools.map(t=>t.name);assert.equal(tools.length,64);
  const original=JSON.parse(await readFile(new URL('./fixtures/original-capabilities.json',import.meta.url),'utf8'));assert.equal(original.tools.length,28);for(const name of original.tools)assert.ok(tools.includes(name),name);
  const p={project_id:(await call(a,'project_register',{name:'MCP',root:app,mode:'existing'})).id};
  await call(a,'memory_store',{...memory(p.project_id)});

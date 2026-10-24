@@ -1,5 +1,14 @@
 # Histórico
 
+## 1.0.0-rc.6
+
+- Founder: 11 módulos de negócio mais fluxo de landing/help em uma ferramenta MCP read-only.
+- Projeções de contribuição/equilíbrio/caixa/payback/capacidade e cenários com inputs explícitos, sensibilidade a preço por origem e painel reproduzível sem execução automática.
+- Briefing usa onboarding e memória existentes; relatórios vinculam fontes/claims ao snapshot e recusam prova especial apoiada em simulação.
+- Mesmo núcleo implementado/validado primeiro no original e portado com hash e transpilação reproduzível. Catálogo passa de 63 para 64 ferramentas.
+- Contrato distribuído para agentes e ativação no boot/setup; sem ledger, banco, tarefas, pesquisa web ou publicação paralelos.
+
+
 ## 1.0.0-rc.5
 
 - Ampliação Ponytail primeiro no MCP original: seleção de diff, auditoria de qualidade, relatório com âncoras e snapshot, gatilhos/custom markers e preferências persistentes.
