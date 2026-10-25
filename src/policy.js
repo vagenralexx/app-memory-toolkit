@@ -1,3 +1,4 @@
+import {GRAPH_WORKFLOW} from './graph-core.js';
 import {FOUNDER_WORKFLOW} from './founder-core.js';
 import {ENGINEERING_SKILL} from './ponytail-workflow.js';
 import { pack } from './store.js';
@@ -21,6 +22,7 @@ export const BASE_RULES = [
 export const SERVER_INSTRUCTIONS = `App Memory Toolkit: memória local de vários projetos, compartilhável entre clientes MCP.
 ${ENGINEERING_SKILL}
 ${FOUNDER_WORKFLOW}
+${GRAPH_WORKFLOW}
 Engenharia reuse-first: get_ponytail_guidance(task,mode=plan/review/audit/debt/help/gain,project_id) retorna candidatos de reutilização, impacto e atalhos para conferência. Use antes de criar abstrações/dependências ou revisar simplificações. A ferramenta não executa revisão/testes, não ativa plugin/hooks nem grava backlog; requisitos, segurança, validações e acessibilidade prevalecem sobre reduzir linhas. Pendências confirmadas seguem task_list/task_update, sem ledger paralelo.
 Quando o usuário disser "vamos usar App Memory", "usar app-memory" ou "usar este MCP", chamar start_project(root=pasta absoluta autorizada) antes de implementar. Seguir as perguntas e next_tools. Nunca usar o cwd do servidor como pasta do app. project_prepare adiciona organização em pastas existentes, prévia por padrão. O banco SQLite do MCP é separado do banco do app; confirmar dados, entidades, permissões, migrações e backup antes de escolher tecnologia.
 Início alternativo: project_list -> get_operating_rules -> get_task_briefing. Projeto novo: onboarding_questions -> project_register -> project_scaffold (prévia). App existente: project_register(mode=existing) -> project_index.
@@ -46,5 +48,6 @@ export function getRules(store, projectId, scope = 'all') {
 export function agentInstructions(projectId) {
   return `# Contrato do agente — App Memory\n\n${projectId ? `Projeto: ${projectId}.\n` : 'Identifique o project_id com project_list; não escolha pela última tarefa global.\n'}
 Servidor MCP: app-memory.\n\n${ENGINEERING_SKILL}
-${FOUNDER_WORKFLOW}\n\n0. Ao pedir para usar App Memory, chamar start_project com a raiz absoluta autorizada; seguir diagnóstico e perguntas.\n1. Consultar get_operating_rules e get_task_briefing no início.\n2. Em trabalho significativo, cadastrar/retomar a tarefa cedo com task_update/task_resume.\n3. Consultar search_knowledge e get_code_references antes de alterar o módulo; expandir referências apenas quando necessário.\n4. Atualizar backlog com critérios de aceite, receita, método, local, consumidores e evidências. Usar expected_revision.\n5. Salvar checkpoint por unidade e aprendizado com fonte e limites; buscar antes de duplicar.\n6. Encerrar com task_handoff; o próximo cliente retoma pelo mesmo project_id/task_id.\n\n${BASE_RULES.map(rule => `- [${rule.scope}] ${rule.text}`).join('\n')}\n\nA conexão disponibiliza ferramentas; não garante que o agente as chamará. Este contrato deve ser incluído nas instruções do cliente. Sem integração de identidade do host, a retomada usa IDs explícitos.\n`;
+${FOUNDER_WORKFLOW}
+${GRAPH_WORKFLOW}\n\n0. Ao pedir para usar App Memory, chamar start_project com a raiz absoluta autorizada; seguir diagnóstico e perguntas.\n1. Consultar get_operating_rules e get_task_briefing no início.\n2. Em trabalho significativo, cadastrar/retomar a tarefa cedo com task_update/task_resume.\n3. Consultar search_knowledge e get_code_references antes de alterar o módulo; expandir referências apenas quando necessário.\n4. Atualizar backlog com critérios de aceite, receita, método, local, consumidores e evidências. Usar expected_revision.\n5. Salvar checkpoint por unidade e aprendizado com fonte e limites; buscar antes de duplicar.\n6. Encerrar com task_handoff; o próximo cliente retoma pelo mesmo project_id/task_id.\n\n${BASE_RULES.map(rule => `- [${rule.scope}] ${rule.text}`).join('\n')}\n\nA conexão disponibiliza ferramentas; não garante que o agente as chamará. Este contrato deve ser incluído nas instruções do cliente. Sem integração de identidade do host, a retomada usa IDs explícitos.\n`;
 }

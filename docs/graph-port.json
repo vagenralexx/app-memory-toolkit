@@ -1,0 +1,11 @@
+{
+  "method": "own_implementation_inspired_by_graphify",
+  "engine_version": "1.0.0",
+  "first_implementation": "original_mcp",
+  "source": "src/graph-core.ts",
+  "source_sha256": "bd3a7bc3f9d6390c8488635f472ec3585dba498c963d8fd7a88c73d849489b0a",
+  "transpiler": "typescript@5.9.3",
+  "upstream_reference": "https://github.com/Graphify-Labs/graphify",
+  "copies_upstream_code": false,
+  "requires_graphify_runtime": false
+}

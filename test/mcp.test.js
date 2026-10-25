@@ -16,7 +16,7 @@ test('MCP real: conexão stdio, onboarding, indexação, tarefas, decisões e re
   t.after(() => client.close());
   await client.connect(transport);
   const tools = await client.listTools();
-  assert.equal(tools.tools.length, 64);
+  assert.equal(tools.tools.length, 65);
   async function call(name, args = {}, error = false) {
     const response = await client.callTool({ name, arguments: args });
     assert.equal(Boolean(response.isError), error, JSON.stringify(response));

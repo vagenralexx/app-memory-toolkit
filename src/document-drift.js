@@ -5,7 +5,7 @@ import { parseCode } from './structure.js';
 import { constraints,evaluateConstraint } from './architecture.js';
 import { hash } from './store.js';
 import { isWithin } from './safety.js';
-function docRefs(doc){const refs=[];for(const m of doc.content.matchAll(/\[[^\]]*\]\(([^)\s]+)\)|`((?:[A-Za-z0-9_.-]+\/)+[A-Za-z0-9_./-]+\.[a-zA-Z0-9]+(?::\d+)?(?:#[\w$]+)?)`/g)){const text=m[1]??m[2];if(/^(?:https?:|mailto:|#|data:)/.test(text))continue;const [raw,symbol]=text.split('#'),path=raw.replace(/:\d+$/,'');refs.push({path,symbol,link:Boolean(m[1]),line:doc.content.slice(0,m.index).split('\n').length+1});}return refs;}
+export function docRefs(doc){const refs=[];for(const m of doc.content.matchAll(/\[[^\]]*\]\(([^)\s]+)\)|`((?:[A-Za-z0-9_.-]+\/)+[A-Za-z0-9_./-]+\.[a-zA-Z0-9]+(?::\d+)?(?:#[\w$]+)?)`/g)){const text=m[1]??m[2];if(/^(?:https?:|mailto:|#|data:)/.test(text))continue;const [raw,symbol]=text.split('#'),path=raw.replace(/:\d+$/,'');refs.push({path,symbol,link:Boolean(m[1]),line:doc.content.slice(0,m.index).split('\n').length+1});}return refs;}
 export async function documentDrift(store,projectId,{limit=30,offset=0,other_project_ids=[]}={}){
  const project=store.project(projectId),scan=await scanProject(project.root,store.directory),byPath=new Map(scan.sources.map(s=>[s.path,s]));
  const indexed=store.db.prepare("SELECT * FROM records WHERE project_id=? AND source_path IS NOT NULL").all(projectId),old=new Map(indexed.map(r=>[r.source_path,r]));

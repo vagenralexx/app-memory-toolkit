@@ -1,6 +1,6 @@
-# Matriz de capacidades — 1.0.0-rc.6
+# Matriz de capacidades — 1.0.0-rc.7
 
-Escopo: as 28 ferramentas observadas em tools/list do MCP de referência em 23/10/2026. Todas têm um equivalente funcional na ferramenta independente. Isso não significa cópia de contratos, bases, defaults específicos ou implementação interna. Total do produto novo: 64 ferramentas. As ampliações get_ponytail_guidance e get_founder_guidance estão descritas em PONYTAIL.md e FOUNDER.md.
+Escopo: as 28 ferramentas observadas em tools/list do MCP de referência em 23/10/2026. Todas têm um equivalente funcional na ferramenta independente. Isso não significa cópia de contratos, bases, defaults específicos ou implementação interna. Total do produto novo: 65 ferramentas. As ampliações get_ponytail_guidance e get_founder_guidance estão descritas em PONYTAIL.md e FOUNDER.md. get_graph_context está em GRAPH.md.
 
 | Capacidade de referência | Adaptação implementada | Evidência de teste |
 | --- | --- | --- |

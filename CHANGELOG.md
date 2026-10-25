@@ -1,5 +1,14 @@
 # Histórico
 
+## 1.0.0-rc.7
+
+- Grafo de contexto próprio inspirado no Graphify: overview/path/impact/snapshot/diff/help com direção, evidência e inferências opt-in.
+- Caminhos e impacto estático transitivo, concentração, componentes fracos/módulos existentes, ciclos de imports, rationale NOTE/WHY e Mermaid limitado.
+- Snapshots determinísticos por escopo/filtro, comparação de nós/ligações, recusa de digest/escopo incompatível e cobertura incompleta explícita.
+- Reutiliza scanner protegido, TypeChecker/índice estrutural, relações documentais/canônicas e memória existentes. Sem novo banco, serviço, scraper, Cloud ou runtime Graphify.
+- Implementado/validado primeiro no original e portado com SHA/transpilação reproduzível. Catálogo da derivada passa de 64 para 65 ferramentas.
+
+
 ## 1.0.0-rc.6
 
 - Founder: 11 módulos de negócio mais fluxo de landing/help em uma ferramenta MCP read-only.

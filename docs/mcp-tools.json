@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-rc.6",
+  "version": "1.0.0-rc.7",
   "tools": [
     {
       "name": "start_project",
@@ -2087,6 +2087,104 @@
             "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
           }
         },
+        "$schema": "https://json-schema.org/draft/2020-12/schema"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "get_graph_context",
+      "description": "Caminhos, impacto transitivo estático, concentração, ciclos, justificativas e snapshots/diff sobre índices/relações existentes. Direção e evidência por ligação; inferências opt-in. Read-only; não comprova runtime nem cria outro banco.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "mode": {
+            "default": "overview",
+            "type": "string",
+            "enum": [
+              "overview",
+              "path",
+              "impact",
+              "snapshot",
+              "diff",
+              "help"
+            ]
+          },
+          "focus": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "to": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "direction": {
+            "type": "string",
+            "enum": [
+              "incoming",
+              "outgoing",
+              "both"
+            ]
+          },
+          "max_depth": {
+            "default": 4,
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 8
+          },
+          "limit": {
+            "default": 15,
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 50
+          },
+          "offset": {
+            "default": 0,
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "paths": {
+            "maxItems": 30,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "relations": {
+            "maxItems": 20,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "include_inferred": {
+            "default": false,
+            "type": "boolean"
+          },
+          "previous": {
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {}
+          },
+          "diagram": {
+            "default": false,
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "project_id"
+        ],
         "$schema": "https://json-schema.org/draft/2020-12/schema"
       },
       "annotations": {
