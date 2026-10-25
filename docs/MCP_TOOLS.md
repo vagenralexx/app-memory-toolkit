@@ -1,4 +1,4 @@
-# Catálogo MCP 1.0.0-rc.9
+# Catálogo MCP 1.0.0-rc.10
 
 Catálogo obtido por tools/list do servidor real: **66 ferramentas**. O contrato completo de argumentos está em [mcp-tools.json](mcp-tools.json).
 

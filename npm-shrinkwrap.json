@@ -1,12 +1,12 @@
 {
   "name": "app-memory-toolkit",
-  "version": "1.0.0-rc.9",
+  "version": "1.0.0-rc.10",
   "lockfileVersion": 3,
   "requires": true,
   "packages": {
     "": {
       "name": "app-memory-toolkit",
-      "version": "1.0.0-rc.9",
+      "version": "1.0.0-rc.10",
       "license": "UNLICENSED",
       "dependencies": {
         "@modelcontextprotocol/server": "2.3.1",

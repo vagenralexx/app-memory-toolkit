@@ -1,5 +1,9 @@
 # Histórico
 
+## 1.0.0-rc.10
+
+- Corrige teste de exportação que dependia de uma pasta local de prévia ausente no CI; preserva validações de HTML/escaping sem gravar artefato fora do repositório.
+
 ##1.0.0-rc.9
 
 - Extensões opcionais: AST em WASM isolado, SQL AST com tipos/views/eventos de schema, importação de entidades ancoradas, PDF/OCR/ASR/vídeo locais.
