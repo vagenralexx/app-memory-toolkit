@@ -2,7 +2,7 @@
 
 ## 1.0.0-rc.8
 
-- Cinco modos novos no grafo: query, explain, communities, audit e export; busca existente fornece sementes.
+- Cinco modos novos no grafo: query, explain, communities, audit e export; busca existente fornece sementes; lexical por padrão e semantic=true para habilitar a semântica existente.
 - Comunidades por modularidade local, pontes, articulações, PageRank e perguntas estruturais; sem afirmar Leiden.
 - Subconjunto SQL DDL com REFERENCES e cache incremental por conteúdo; enriquecimento externo ancorado e sempre inferido.
 - Oito formatos de exportação sem escrita automática, incluindo HTML interativo autocontido e Cypher parametrizado.

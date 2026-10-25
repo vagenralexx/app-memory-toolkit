@@ -64,7 +64,7 @@ Matriz: [GRAPH-MAPPING.md](GRAPH-MAPPING.md). Hash de origem/transpilação em g
 {"project_id":"ID","mode":"export","format":"html","max_nodes":200}
 ```
 
-Query usa retrieve no App Memory e searchKnowledge no original, ambos existentes. Só sementes presentes no recorte atual entram na expansão. Sem sementes válidas, usa correspondência lexical nos rótulos e informa esse fallback. Respostas retornam contexto/evidência, sem gerar uma conclusão por LLM. A direção padrão continua outgoing; both deve ser pedido quando se deseja contexto em ambos os sentidos. No máximo200 nós são visitados nesse modo.
+Query reutiliza retrieve nos dois MCPs, com busca lexical por padrão. semantic=true habilita explicitamente a busca híbrida existente (searchKnowledge no original), que pode inicializar/baixar modelos conforme configuração do host. Só sementes presentes no recorte atual entram na expansão. Sem sementes válidas, usa correspondência lexical nos rótulos e informa esse fallback. Respostas retornam contexto/evidência, sem gerar uma conclusão por LLM. A direção padrão continua outgoing; both deve ser pedido quando se deseja contexto em ambos os sentidos. No máximo200 nós são visitados nesse modo.
 
 O campo export retorna conteúdo e nome sugerido; wiki/Obsidian retornam uma lista de arquivos com nomes derivados de IDs. O agente pode salvar esses artefatos no destino autorizado. Nada é gravado automaticamente. Até500 nós e1000 ligações por exportação; truncated revela o recorte. Cypher é texto parametrizado com parâmetros separados: não conecta nem escreve em Neo4j/FalkorDB. HTML é autocontido, permite buscar rótulos, filtrar relações, selecionar nós, pan/zoom e redefinir; não usa serviços externos. SVG usa disposição circular simples.
 

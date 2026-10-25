@@ -12,7 +12,7 @@ const id = (kind, key) => sha([kind, key]).slice(0, 32);
 const safePath = (s) => !!s && !s.startsWith('/') && !s.includes('\\') && !s.split('/').includes('..') && !/^[A-Za-z]:/.test(s) && s.length <= 1000;
 const clean = (s, max = 300) => s.replace(/[\u0000-\u001f\u007f]/g, ' ').slice(0, max);
 export function validateGraphArgs(raw) {
-    if (Object.keys(raw).some(k => !['mode', 'focus', 'to', 'direction', 'max_depth', 'limit', 'offset', 'paths', 'relations', 'include_inferred', 'previous', 'diagram', 'query', 'format', 'max_nodes', 'resolution', 'enrichment'].includes(k)))
+    if (Object.keys(raw).some(k => !['mode', 'focus', 'to', 'direction', 'max_depth', 'limit', 'offset', 'paths', 'relations', 'include_inferred', 'previous', 'diagram', 'query', 'format', 'max_nodes', 'resolution', 'enrichment', 'semantic'].includes(k)))
         throw Error('Argumento de grafo desconhecido.');
     if (raw.mode !== undefined && !GRAPH_MODES.includes(raw.mode))
         throw Error('mode inválido.');
@@ -32,7 +32,7 @@ export function validateGraphArgs(raw) {
     for (const [key, min, max] of [['max_depth', 1, 8], ['limit', 1, 50], ['offset', 0, 1000000]])
         if (raw[key] !== undefined && (!Number.isSafeInteger(raw[key]) || Number(raw[key]) < min || Number(raw[key]) > max))
             throw Error(key + ' fora dos limites.');
-    for (const key of ['include_inferred', 'diagram'])
+    for (const key of ['include_inferred', 'diagram', 'semantic'])
         if (raw[key] !== undefined && typeof raw[key] !== 'boolean')
             throw Error(key + ' deve ser boolean.');
     if (raw.paths !== undefined && (!Array.isArray(raw.paths) || raw.paths.length > 30 || raw.paths.some(p => typeof p !== 'string' || !safePath(p))))
@@ -278,7 +278,7 @@ export function queryGraph(original, raw) {
         diagram = 'flowchart LR\n' + selected.map(n => ' n' + n.id + '["' + n.label.replace(/["<>\[\]{}|`&]/g, ' ') + '"]').join('\n') + '\n' + eligible.filter(e => ids.has(e.source) && ids.has(e.target)).slice(0, 60).map(e => ' n' + e.source + ' -->|' + e.relation + ' ' + e.confidence + '| n' + e.target).join('\n');
     }
     return { engine: GRAPH_VERSION, mode, status, scope: input.scope, selection, direction, graph_digest: snapshot.digest, counts: { nodes: nodes.size, edges_observed: edges.size, edges_traversable: eligible.length, ambiguous_excluded: [...edges.values()].filter(e => e.confidence === 'AMBIGUOUS').length }, results: results.slice(offset, offset + limit), total: results.length, next_offset: offset + limit < results.length ? offset + limit : null, ...extra, diagram,
-        coverage: { ...input.coverage, complete, truncated }, validation: { execution_verified: false, architecture_approved: false, working_tree_modified: false }, limits: ['Conexão estática não demonstra fluxo em runtime, ausência de risco ou impacto completo.', 'Inferências exigem opt-in; candidatos ambíguos não são percorridos.', 'Snapshot é derivado do índice/fontes e tem limites; não substitui memória/tarefas canônicas.'], provenance: { inspired_by: 'https://github.com/Graphify-Labs/graphify', implementation: 'Own graph algorithms; existing adapters/extractors; no upstream runtime or Cloud.' }, boundaries: graphHelp().boundaries };
+        coverage: { ...input.coverage, complete, truncated }, validation: { execution_verified: false, architecture_approved: false, working_tree_modified: false }, limits: ['Conexão estática não demonstra fluxo em runtime, ausência de risco ou impacto completo.', 'Inferências exigem opt-in; candidatos ambíguos não são percorridos.', 'Snapshot é derivado do índice/fontes e tem limites; não substitui memória/tarefas canônicas.'], provenance: { inspired_by: 'https://github.com/Graphify-Labs/graphify', implementation: 'Own graph algorithms; existing adapters/extractors; no upstream runtime or Cloud.' }, boundaries: { ...graphHelp().boundaries, network: args.semantic ? 'EXISTING_SEMANTIC_PROVIDER_CONFIGURATION' : false } };
 }
 function validateSnapshot(raw) {
     if (!raw || typeof raw !== 'object' || Array.isArray(raw))

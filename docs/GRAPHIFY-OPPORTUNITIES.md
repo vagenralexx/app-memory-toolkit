@@ -6,7 +6,7 @@ Implementação independente inspirada em https://github.com/Graphify-Labs/graph
 | --- | --- | --- |
 | Memória e navegação pelo grafo | Nós de arquivos/símbolos/docs/registros e ligações com hashes | Recorte observado; cobertura parcial explícita |
 | Caminhos e blast radius | BFS direcionado, impacto incoming, profundidade/paginação | Estático, sem prova de execução |
-| Perguntas por assunto | Busca híbrida existente como sementes + vizinhos atuais | Sem síntese por LLM ou GraphRAG de corpus inteiro |
+| Perguntas por assunto | Busca existente como sementes + vizinhos atuais; semântica opt-in | Sem síntese por LLM ou GraphRAG de corpus inteiro |
 | Explain | Relações de entrada/saída com evidência | Explicação por fontes, sem causalidade automática |
 | Comunidades | Modularidade por movimentos locais + partições conexas | Não é Leiden ou Louvain multinível |
 | Topologia | Pontes, articulações, PageRank, concentração e ciclos existentes | Análise limitada às arestas elegíveis observadas |

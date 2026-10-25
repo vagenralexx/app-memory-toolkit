@@ -2186,6 +2186,10 @@
             "default": false,
             "type": "boolean"
           },
+          "semantic": {
+            "default": false,
+            "type": "boolean"
+          },
           "query": {
             "type": "string",
             "minLength": 1,

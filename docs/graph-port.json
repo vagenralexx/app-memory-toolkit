@@ -3,11 +3,11 @@
   "engine_version": "2.0.0",
   "first_implementation": "original_mcp",
   "source": "src/graph-core.ts",
-  "source_sha256": "56fbdbdf906059e8638bdbe4ac0837bf61e4ee7e44092c43dca96055e10ae164",
+  "source_sha256": "2e4ba8653ed58388e2f60f1eca4edaeba8ac8a18285c6168bb9ae8283ecfd3ac",
   "modules": {
-    "graph-core": "56fbdbdf906059e8638bdbe4ac0837bf61e4ee7e44092c43dca96055e10ae164",
-    "graph-analysis": "13e0abeece6a29c5599ed5eee570f1bbc3ef33849a324b950f23ff41cf07647c",
-    "graph-enrichment": "02e33e49e170652c571059d5289305cee105bb43c0f57fcb0ad3b5d75d5cd7a9"
+    "graph-core": "2e4ba8653ed58388e2f60f1eca4edaeba8ac8a18285c6168bb9ae8283ecfd3ac",
+    "graph-analysis": "0301e263be56ae8ef6bedf921ecdd1b8465c15bdb32bcd97543a769a577d0bb8",
+    "graph-enrichment": "f14a801ed2e69fda178f2d00208b838f2237438b753dd09abfe5dc86c1dba2c3"
   },
   "transpiler": "typescript@5.9.3",
   "upstream_reference": "https://github.com/Graphify-Labs/graphify",
