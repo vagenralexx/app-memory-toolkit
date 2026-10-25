@@ -1,5 +1,12 @@
 # Histórico
 
+##1.0.0-rc.9
+
+- Extensões opcionais: AST em WASM isolado, SQL AST com tipos/views/eventos de schema, importação de entidades ancoradas, PDF/OCR/ASR/vídeo locais.
+- Cache estrutural por conteúdo e cache de resultados após leitura atual; TypeChecker reaproveitado com validação de fontes/configuração.
+- manage_graph_context expõe status, monitoramento pelo indexador existente e réplica opt-in Neo4j/FalkorDB.
+- Oito módulos compartilhados portados com SHA/transpilação reproduzível; instalação básica continua sem opcionais/modelos.
+
 ## 1.0.0-rc.8
 
 - Cinco modos novos no grafo: query, explain, communities, audit e export; busca existente fornece sementes; lexical por padrão e semantic=true para habilitar a semântica existente.

@@ -45,7 +45,7 @@ test('MCP oferece entrada real start_project e preparação aditiva após onboar
  const {app,root}=await fixture(t);await writeFile(join(app,'README.md'),'# Meu app existente');
  const client=new Client({name:'activation-tests',version:'1'});await client.connect(new StdioClientTransport({command:process.execPath,args:[resolve('src/cli.js'),'serve','--data',join(root,'mcp-data')],stderr:'pipe'}));t.after(()=>client.close());
  async function call(name,args){const r=await client.callTool({name,arguments:args});assert.ok(!r.isError,JSON.stringify(r));return JSON.parse(r.content[0].text);}
- assert.match(client.getInstructions(),/start_project/);assert.equal((await client.listTools()).tools.length,65);
+ assert.match(client.getInstructions(),/start_project/);assert.equal((await client.listTools()).tools.length,66);
  const state=await call('start_project',{root:app});assert.equal(state.phase,'existing');
  const project=await call('project_register',{name:'Base',root:app,mode:'existing',answers});
  const plan=await call('project_prepare',{project_id:project.id});assert.equal(plan.dry_run,true);

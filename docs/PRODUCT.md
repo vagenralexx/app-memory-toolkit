@@ -1,4 +1,4 @@
-# Escopo da versão de avaliação 1.0.0-rc.8
+# Escopo da versão de avaliação 1.0.0-rc.9
 
 ## Objetivo e conclusão técnica
 

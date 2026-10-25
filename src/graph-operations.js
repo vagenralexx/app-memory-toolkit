@@ -1,0 +1,130 @@
+// Generated from graph-operations.ts; engine first validated in original MCP.
+/** Optional derived watcher and database replication. Canonical memory remains in the existing store. */
+import fs from 'node:fs';
+import { createHash } from 'node:crypto';
+import { createRequire } from 'node:module';
+const require = createRequire(import.meta.url), watchers = new Map();
+export function graphWatch(scope, root, action, seconds = 120, refresh) {
+    if (action === 'watch_stop') {
+        const entry = watchers.get(scope);
+        if (entry) {
+            entry.watcher.close();
+            clearTimeout(entry.timer);
+            clearTimeout(entry.expiry);
+            entry.stopped = true;
+            watchers.delete(scope);
+        }
+        return { active: false, scope };
+    }
+    const old = watchers.get(scope);
+    if (action === 'status' || old)
+        return { active: !!old, scope, ...(old ? { events: old.events, runs: old.runs, busy: old.busy, last_state: old.last_state, expires_at: old.expires_at } : {}), storage: 'process_memory_only' };
+    if (!Number.isInteger(seconds) || seconds < 5 || seconds > 900 || !refresh)
+        throw Error('Watcher exige5–900 segundos e callback existente.');
+    if (watchers.size >= 3)
+        throw Error('Limite de3 watchers por processo.');
+    const entry = { events: 0, runs: 0, busy: false, dirty: false, last_state: 'WAITING_FOR_CHANGE', expires_at: new Date(Date.now() + seconds * 1000).toISOString() };
+    const run = async () => { if (entry.stopped)
+        return; if (entry.runs >= 20) {
+        graphWatch(scope, root, 'watch_stop');
+        return;
+    } if (entry.busy) {
+        entry.dirty = true;
+        return;
+    } entry.busy = true; try {
+        await refresh();
+        entry.last_state = 'EXISTING_INDEX_UPDATED';
+        entry.runs++;
+    }
+    catch {
+        entry.last_state = 'REFRESH_FAILED';
+    }
+    finally {
+        entry.busy = false;
+        if (entry.dirty) {
+            entry.dirty = false;
+            entry.timer = setTimeout(run, 800);
+            entry.timer.unref?.();
+        }
+    } };
+    entry.watcher = fs.watch(root, { recursive: true }, (_event, filename) => { if (entry.stopped)
+        return; const name = String(filename ?? '').replaceAll('\\', '/'); if (/(^|\/)(?:\.git|node_modules|vendor|dist|build|coverage|\.app-memory|\.mcp-memory)(\/|$)/.test(name))
+        return; entry.events++; clearTimeout(entry.timer); entry.timer = setTimeout(run, 800); entry.timer.unref?.(); });
+    entry.watcher.unref();
+    entry.watcher.on('error', () => { entry.last_state = 'WATCH_FAILED'; graphWatch(scope, root, 'watch_stop'); });
+    entry.expiry = setTimeout(() => graphWatch(scope, root, 'watch_stop'), seconds * 1000);
+    entry.expiry.unref();
+    watchers.set(scope, entry);
+    return graphWatch(scope, root, 'status');
+}
+export function graphProviderStatus() { const installed = (n) => { try {
+    require.resolve(n);
+    return true;
+}
+catch {
+    return false;
+} }; return { sync_enabled: process.env.MCP_GRAPH_SYNC_ENABLED === '1', neo4j: { driver_installed: installed('neo4j-driver'), configured: !!process.env.MCP_GRAPH_NEO4J_URI }, falkordb: { driver_installed: installed('redis'), configured: !!process.env.MCP_GRAPH_FALKORDB_URI }, media: { pdf_installed: installed('pdfjs-dist'), ocr_installed: installed('tesseract.js'), local_ocr_data_configured: !!process.env.MCP_GRAPH_OCR_DATA_DIR, local_asr_configured: !!process.env.MCP_GRAPH_ASR_MODEL, ffmpeg_configured: !!process.env.MCP_GRAPH_FFMPEG }, secrets_returned: false }; }
+export const SYNC_NODE_QUERY = 'UNWIND $nodes AS n MERGE (x:ProjectGraphNode {scope:$scope,id:n.id}) SET x += n';
+export const SYNC_EDGE_QUERY = 'UNWIND $edges AS e MATCH (a:ProjectGraphNode {scope:$scope,id:e.source}),(b:ProjectGraphNode {scope:$scope,id:e.target}) MERGE (a)-[r:PROJECT_GRAPH_LINK {id:e.id}]->(b) SET r += e';
+function cypherLiteral(v) { if (Array.isArray(v))
+    return '[' + v.map(cypherLiteral).join(',') + ']'; if (v && typeof v === 'object')
+    return '{' + Object.entries(v).map(([k, x]) => { if (!/^[a-z_]+$/.test(k))
+        throw Error('Chave Cypher inválida.'); return k + ':' + cypherLiteral(x); }).join(',') + '}'; return JSON.stringify(v); }
+export async function syncGraph(payload, target, drivers) {
+    if (process.env.MCP_GRAPH_SYNC_ENABLED !== '1')
+        throw Error('Sincronização desabilitada; configurar MCP_GRAPH_SYNC_ENABLED=1 no host.');
+    if (!['neo4j', 'falkordb'].includes(target) || payload?.schema !== 'mcp-graph-export/v1' || typeof payload.scope !== 'string' || !Array.isArray(payload.nodes) || !Array.isArray(payload.edges) || payload.nodes.length > 500 || payload.edges.length > 1000)
+        throw Error('Payload/target de sincronização inválido.');
+    const scope = payload.scope, nodes = payload.nodes.map((n) => ({ id: n.id, label: n.label, kind: n.kind, path: n.path ?? '', source_hash: n.hash ?? '' })), edges = payload.edges.map((e) => ({ id: e.id, source: e.source, target: e.target, relation: e.relation, confidence: e.confidence, evidence: JSON.stringify(e.evidence) }));
+    if (target === 'neo4j') {
+        const uri = process.env.MCP_GRAPH_NEO4J_URI, user = process.env.MCP_GRAPH_NEO4J_USER, password = process.env.MCP_GRAPH_NEO4J_PASSWORD;
+        let parsed;
+        try {
+            if (uri)
+                parsed = new URL(uri);
+        }
+        catch {
+            throw Error('URI Neo4j inválida.');
+        }
+        if (!uri || !user || !password || !/^neo4j(?:\+s|\+ssc)?:\/\/|^bolt(?:\+s|\+ssc)?:\/\//.test(uri) || parsed?.username || parsed?.password)
+            throw Error('Perfil Neo4j incompleto ou URI inválida; credenciais devem ficar no ambiente.');
+        const neo4j = drivers?.neo4j ?? require('neo4j-driver'), driver = neo4j.driver(uri, neo4j.auth.basic(user, password), { connectionTimeout: 10000, maxConnectionPoolSize: 1 });
+        let session;
+        try {
+            session = driver.session();
+            await session.executeWrite(async (tx) => { await tx.run(SYNC_NODE_QUERY, { scope, nodes }); await tx.run(SYNC_EDGE_QUERY, { scope, edges }); });
+        }
+        catch {
+            throw Error('NEO4J_SYNC_FAILED; detalhes/credenciais não expostos.');
+        }
+        finally {
+            await session?.close();
+            await driver.close();
+        }
+    }
+    else {
+        const uri = process.env.MCP_GRAPH_FALKORDB_URI;
+        if (!uri || !/^rediss?:\/\//.test(uri))
+            throw Error('Perfil FalkorDB não configurado.');
+        const redis = drivers?.redis ?? require('redis'), client = redis.createClient({ url: uri, socket: { connectTimeout: 10000, reconnectStrategy: false } });
+        client.on('error', () => { });
+        const graph = 'app_memory_' + createHash('sha256').update(scope).digest('hex').slice(0, 24);
+        try {
+            await client.connect();
+            for (const [query, params] of [[SYNC_NODE_QUERY, { scope, nodes }], [SYNC_EDGE_QUERY, { scope, edges }]]) {
+                const prefix = 'CYPHER ' + Object.entries(params).map(([k, v]) => k + '=' + cypherLiteral(v)).join(' ') + ' ';
+                await client.sendCommand(['GRAPH.QUERY', graph, prefix + query, '--compact']);
+            }
+        }
+        catch {
+            throw Error('FALKORDB_SYNC_FAILED; detalhes/credenciais não expostos.');
+        }
+        finally {
+            if (client.isOpen)
+                await client.quit();
+            else
+                client.destroy?.();
+        }
+    }
+    return { target, scope, nodes_upserted: nodes.length, edges_upserted: edges.length, operation: 'UPSERT_DERIVED_REPLICA', canonical_memory_changed: false, prunes_absent_nodes: false, transactional: target === 'neo4j', partial_failure_possible: target === 'falkordb', executed: true };
+}

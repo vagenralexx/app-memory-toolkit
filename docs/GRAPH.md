@@ -1,3 +1,7 @@
+# Versão atual rc.9
+
+Leia [Extensões de grafo](GRAPH-EXTENSIONS.md) para parsers, SQL AST, mídia, importação, watcher e conectores. As seções rc.7/rc.8 abaixo descrevem a base preservada; os limites ampliados são os do documento de extensões.
+
 # Grafo de contexto — rc.8
 
 get_graph_context reúne onze modos em uma ferramenta read-only, sem novo banco, MCP externo ou runtime Graphify. Primeiro implementado no original e depois portado o mesmo núcleo. Inspirado na [arquitetura Graphify](https://github.com/Graphify-Labs/graphify/blob/v8/ARCHITECTURE.md), com implementação independente e índices próprios existentes. REA não foi necessário: a referência possui código-fonte aberto.

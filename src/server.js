@@ -38,7 +38,7 @@ export function createServer(store) {
     if(CACHE_TOOLS.has(name))schema={...schema,cache_mode:z.enum(['full','reference']).default('full')};
     server.registerTool(name, {
       description, inputSchema: z.object(schema),
-      annotations: { readOnlyHint: readOnly, destructiveHint: name==='memory_delete', openWorldHint: false }
+      annotations: { readOnlyHint: readOnly, destructiveHint: name==='memory_delete', openWorldHint: name==='manage_graph_context' }
     }, async args => {
       try {
         const hit=args.cache_mode==='reference'?responseCache.lookup(name,args):null;

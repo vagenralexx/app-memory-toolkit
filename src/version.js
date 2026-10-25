@@ -1,1 +1,2 @@
-export const VERSION = '1.0.0-rc.7';
+import metadata from '../package.json' with {type:'json'};
+export const VERSION=metadata.version;

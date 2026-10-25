@@ -1,6 +1,6 @@
 {
   "name": "app-memory-toolkit",
-  "version": "1.0.0-rc.8",
+  "version": "1.0.0-rc.9",
   "description": "Memória de desenvolvimento e onboarding para projetos novos e existentes, via CLI e MCP.",
   "type": "module",
   "private": true,
@@ -46,7 +46,14 @@
     "@modelcontextprotocol/client": "2.3.1"
   },
   "optionalDependencies": {
-    "@huggingface/transformers": "4.3.1"
+    "@huggingface/transformers": "4.3.1",
+    "neo4j-driver": "6.2.0",
+    "node-sql-parser": "5.4.0",
+    "pdfjs-dist": "6.4.299",
+    "redis": "6.3.0",
+    "tesseract.js": "7.0.0",
+    "tree-sitter-wasms": "0.1.13",
+    "web-tree-sitter": "0.25.10"
   },
   "repository": {
     "type": "git",

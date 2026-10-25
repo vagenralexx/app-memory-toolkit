@@ -8,7 +8,7 @@ import { analyzeSources } from './analysis.js';
 import { containsSecret, readBounded } from './safety.js';
 
 const excluded = new Set(['.git', '.svn', 'node_modules', 'vendor', 'dist', 'build', 'coverage', '.next', '.nuxt', '.venv', 'venv', '__pycache__', '.app-memory', '.mcp-memory', '.idea', '.vscode', 'logs', 'secrets', 'credentials']);
-const extensions = new Set(['.md', '.txt', '.json', '.js', '.mjs', '.cjs', '.jsx', '.ts', '.tsx', '.py', '.rs', '.go', '.java', '.cs', '.css', '.scss', '.html', '.vue', '.svelte', '.toml', '.yaml', '.yml', '.sql', '.prisma', '.graphql', '.sh', '.ps1','.kt','.kts','.swift','.dart','.php','.rb','.c','.cpp','.h','.hpp','.csproj','.xml','.gradle','.ini','.cfg']);
+const extensions = new Set(['.md', '.txt', '.json', '.js', '.mjs', '.cjs', '.jsx', '.ts', '.tsx', '.py', '.rs', '.go', '.java', '.cs', '.css', '.scss', '.html', '.vue', '.svelte', '.toml', '.yaml', '.yml', '.sql', '.prisma', '.graphql', '.sh', '.ps1','.kt','.kts','.swift','.dart','.php','.rb','.c','.cpp','.h','.hpp','.csproj','.xml','.gradle','.ini','.cfg','.cc','.lua','.ex','.exs','.elm','.ml','.mli','.scala','.sc','.sol','.zig','.bash','.m','.mm','.res','.resi','.ql','.tla','.el']);
 const denied = /(^\.env(?:\.|$)|(?:secret|credential|token|password)|(?:^|\.)id_(?:rsa|ed25519)|(?:package-lock|npm-shrinkwrap|pnpm-lock|yarn\.lock)|\.min\.)/i;
 const MAX_FILES = 5000;
 const MAX_TOTAL_BYTES = 12_000_000;
@@ -19,9 +19,10 @@ function within(root, target) {
   return rel === '' || (!rel.startsWith(`..`) && !isAbsolute(rel));
 }
 
-export async function scanProject(root, dataDirectory) {
+export async function scanProject(root, dataDirectory,{artifacts:requestedArtifacts=[]}={}) {
   const canonical = await realpath(root);
   const sources = [];
+  const artifacts=[];
   const skipped = {};
   let bytes = 0;
   let visited = 0;
@@ -62,6 +63,7 @@ export async function scanProject(root, dataDirectory) {
       }
       if (ignored) { skip('gitignore'); continue; }
       if (entry.isDirectory()) { await walk(path,rules); continue; }
+      if(entry.isFile()&&requestedArtifacts.includes(rel)){try{const st=await lstat(path);if(!st.isSymbolicLink()&&st.size<=20000000&&within(canonical,await realpath(path)))artifacts.push(rel);else skip('media_size_or_path');}catch{skip('media_unavailable');}continue;}
       if (!entry.isFile() || (!extensions.has(extname(entry.name).toLowerCase()) && !['Dockerfile', 'Makefile'].includes(entry.name))) continue;
       try {
         const stat = await lstat(path);
@@ -76,7 +78,7 @@ export async function scanProject(root, dataDirectory) {
     }
   }
   await walk(canonical);
-  return { root: canonical, sources, skipped, bytes, complete, gitignore: '.gitignore',configuration };
+  return { root: canonical, sources, artifacts, skipped, bytes, complete, gitignore: '.gitignore',configuration };
 }
 
 export function scaffoldFiles(name, answers, projectId) {

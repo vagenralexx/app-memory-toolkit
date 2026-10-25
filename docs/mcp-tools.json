@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-rc.8",
+  "version": "1.0.0-rc.9",
   "tools": [
     {
       "name": "start_project",
@@ -2096,6 +2096,59 @@
       }
     },
     {
+      "name": "manage_graph_context",
+      "description": "Status de provedores, watcher temporário do indexador existente e replicação opcional do grafo em perfil do host. Sync exige habilitação no ambiente; não recebe segredos.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "status",
+              "watch_start",
+              "watch_stop",
+              "sync"
+            ]
+          },
+          "target": {
+            "type": "string",
+            "enum": [
+              "neo4j",
+              "falkordb"
+            ]
+          },
+          "seconds": {
+            "default": 120,
+            "type": "integer",
+            "minimum": 5,
+            "maximum": 900
+          },
+          "paths": {
+            "maxItems": 30,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "project_id",
+          "action"
+        ],
+        "$schema": "https://json-schema.org/draft/2020-12/schema"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": true
+      }
+    },
+    {
       "name": "get_graph_context",
       "description": "Consulta por assunto, explicações, comunidades, auditoria estrutural, exportações, SQL, caminhos, impacto transitivo estático e snapshots/diff sobre índices/relações existentes. Direção e evidência por ligação; inferências opt-in. Read-only; não comprova runtime nem cria outro banco.",
       "inputSchema": {
@@ -2217,6 +2270,40 @@
             "type": "number",
             "minimum": 0.1,
             "maximum": 4
+          },
+          "parsers": {
+            "default": true,
+            "type": "boolean"
+          },
+          "sql_dialect": {
+            "type": "string",
+            "enum": [
+              "Postgresql",
+              "MySQL",
+              "TransactSQL",
+              "Sqlite",
+              "MariaDB",
+              "DB2",
+              "BigQuery"
+            ]
+          },
+          "media": {
+            "maxItems": 8,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "propertyNames": {
+                "type": "string"
+              },
+              "additionalProperties": {}
+            }
+          },
+          "extraction": {
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {}
           },
           "enrichment": {
             "type": "object",

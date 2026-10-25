@@ -1,13 +1,18 @@
 {
   "method": "own_implementation_inspired_by_graphify",
-  "engine_version": "2.0.0",
+  "engine_version": "3.0.0",
   "first_implementation": "original_mcp",
   "source": "src/graph-core.ts",
-  "source_sha256": "2e4ba8653ed58388e2f60f1eca4edaeba8ac8a18285c6168bb9ae8283ecfd3ac",
+  "source_sha256": "cb533b74153742521fc7d1b2e5af1b5372f00285c63f5641bc9a64a715d96de2",
   "modules": {
-    "graph-core": "2e4ba8653ed58388e2f60f1eca4edaeba8ac8a18285c6168bb9ae8283ecfd3ac",
+    "graph-core": "cb533b74153742521fc7d1b2e5af1b5372f00285c63f5641bc9a64a715d96de2",
     "graph-analysis": "0301e263be56ae8ef6bedf921ecdd1b8465c15bdb32bcd97543a769a577d0bb8",
-    "graph-enrichment": "f14a801ed2e69fda178f2d00208b838f2237438b753dd09abfe5dc86c1dba2c3"
+    "graph-enrichment": "f14a801ed2e69fda178f2d00208b838f2237438b753dd09abfe5dc86c1dba2c3",
+    "graph-extractors": "ecf2647c637173768ef10fb161a7db7e5a104a10ef57427475d4cbdbaf983f59",
+    "graph-cache": "890965649737b199e166bf2c41b2631937e43a198892495a4d45dad170bcbe4a",
+    "graph-import": "8a9f552ea2cc41d692255ef9df935111f24fe68441db2d7f03545b2077abfba2",
+    "graph-media": "260c56b11d9ea700d8d26288c55b1fd8f0d6ee27e05cbc4353c559ac0846fed6",
+    "graph-operations": "d842a89dcd295174c4c24f98b3b0e30fac8c5a70ebf42b6b2a36f3749978094d"
   },
   "transpiler": "typescript@5.9.3",
   "upstream_reference": "https://github.com/Graphify-Labs/graphify",
