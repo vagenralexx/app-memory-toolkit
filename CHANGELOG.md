@@ -1,5 +1,9 @@
 # Histórico
 
+## 1.0.0-rc.11
+
+- Compara a raiz importada com realpath no teste de portabilidade, aceitando a expansão canônica de caminhos abreviados do Windows CI. Sem alteração de runtime.
+
 ## 1.0.0-rc.10
 
 - Corrige teste de exportação que dependia de uma pasta local de prévia ausente no CI; preserva validações de HTML/escaping sem gravar artefato fora do repositório.
