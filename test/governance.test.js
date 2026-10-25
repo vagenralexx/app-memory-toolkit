@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, mkdir, writeFile, readFile } from 'node:fs/promises';
+import { mkdtemp, mkdir, writeFile, readFile, realpath } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { Store } from '../src/store.js';
@@ -72,7 +72,7 @@ test('exportação/importação preserva tarefas, memória, histórico e retomad
   const target=new Store(join(root,'imported'));t.after(()=>target.close());
   const otherApp=join(root,'relocated');await mkdir(otherApp);
   const imported=await importProject(target,path,otherApp);assert.equal(imported.project.id,p);
-  assert.equal(target.project(p).root,otherApp);
+  assert.equal(target.project(p).root,await realpath(otherApp));
   assert.equal(resume(target,p,task.id).task.title,'Continuar');
   assert.ok(target.db.prepare('SELECT count(*) AS n FROM history').get().n>=exported.history.length);
   await assert.rejects(importProject(target,path,otherApp),/já existente/);
