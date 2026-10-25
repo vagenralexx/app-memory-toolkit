@@ -1,5 +1,13 @@
 # Histórico
 
+## 1.0.0-rc.8
+
+- Cinco modos novos no grafo: query, explain, communities, audit e export; busca existente fornece sementes.
+- Comunidades por modularidade local, pontes, articulações, PageRank e perguntas estruturais; sem afirmar Leiden.
+- Subconjunto SQL DDL com REFERENCES e cache incremental por conteúdo; enriquecimento externo ancorado e sempre inferido.
+- Oito formatos de exportação sem escrita automática, incluindo HTML interativo autocontido e Cypher parametrizado.
+- Três módulos compartilhados portados do original com hashes reproduzíveis; mapa de oportunidades e limites explícitos.
+
 ## 1.0.0-rc.7
 
 - Grafo de contexto próprio inspirado no Graphify: overview/path/impact/snapshot/diff/help com direção, evidência e inferências opt-in.

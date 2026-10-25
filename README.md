@@ -1,4 +1,4 @@
-# App Memory Toolkit — 1.0.0-rc.7
+# App Memory Toolkit — 1.0.0-rc.8
 
 **Capacidades:** consulte a [matriz das 28 capacidades de referência](docs/CAPABILITIES.md) e os [novos contratos](docs/GAP-CLOSURE.md).
 
@@ -31,7 +31,7 @@ node src/cli.js wizard --data "D:\AppMemory\base"
 Para instalar o pacote distribuído em outra pasta/máquina com Node.js:
 
 ```powershell
-npm install --global "C:\caminho\app-memory-toolkit-1.0.0-rc.7.tgz" --ignore-scripts
+npm install --global "C:\caminho\app-memory-toolkit-1.0.0-rc.8.tgz" --ignore-scripts
 app-memory wizard --data "D:\AppMemory\base"
 ```
 

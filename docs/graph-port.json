@@ -1,9 +1,14 @@
 {
   "method": "own_implementation_inspired_by_graphify",
-  "engine_version": "1.0.0",
+  "engine_version": "2.0.0",
   "first_implementation": "original_mcp",
   "source": "src/graph-core.ts",
-  "source_sha256": "bd3a7bc3f9d6390c8488635f472ec3585dba498c963d8fd7a88c73d849489b0a",
+  "source_sha256": "56fbdbdf906059e8638bdbe4ac0837bf61e4ee7e44092c43dca96055e10ae164",
+  "modules": {
+    "graph-core": "56fbdbdf906059e8638bdbe4ac0837bf61e4ee7e44092c43dca96055e10ae164",
+    "graph-analysis": "13e0abeece6a29c5599ed5eee570f1bbc3ef33849a324b950f23ff41cf07647c",
+    "graph-enrichment": "02e33e49e170652c571059d5289305cee105bb43c0f57fcb0ad3b5d75d5cd7a9"
+  },
   "transpiler": "typescript@5.9.3",
   "upstream_reference": "https://github.com/Graphify-Labs/graphify",
   "copies_upstream_code": false,

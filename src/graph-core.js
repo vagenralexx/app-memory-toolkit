@@ -1,19 +1,29 @@
 // Generated from graph-core.ts; engine first validated in original MCP.
 /** Own bounded graph algorithms inspired by Graphify. Existing extractors/indexes supply the evidence. */
+import { topology, graphExport } from './graph-analysis.js';
+import { enrichGraph } from './graph-enrichment.js';
 import { createHash } from 'node:crypto';
-export const GRAPH_VERSION = '1.0.0';
-export const GRAPH_MODES = ['overview', 'path', 'impact', 'snapshot', 'diff', 'help'];
-export const GRAPH_WORKFLOW = 'Grafo: get_graph_context consulta índices/relações existentes para caminhos, impacto estático, concentração, snapshots/diff. Escolher IDs exatos quando há ambiguidade; direção e classificação de cada ligação são explícitas. Inferências são opt-in. Conferir cobertura/hash e fontes atuais; caminho estático não prova fluxo executado. Snapshot é derivado e não uma nova fonte canônica; guardar no memory_store existente somente se couber e mantiver scope/filtro. Sem relação encontrada não significa ausência de risco. Usar as ferramentas de referências/revisão/arquitetura existentes, sem outro índice, banco, hook ou serviço.';
+export const GRAPH_VERSION = '2.0.0';
+export const GRAPH_MODES = ['overview', 'path', 'impact', 'snapshot', 'diff', 'query', 'explain', 'communities', 'audit', 'export', 'help'];
+export const GRAPH_WORKFLOW = 'Grafo: get_graph_context consulta índices/relações existentes para caminhos, impacto estático, concentração, snapshots/diff, query, explain, communities, audit e export. Query aceita pergunta e expande sementes da busca; export produz artefatos sem gravar. Enrichment externo exige hash/linha/trecho atuais e opt-in para percorrer inferências. Escolher IDs exatos quando há ambiguidade; direção e classificação de cada ligação são explícitas. Inferências são opt-in. Conferir cobertura/hash e fontes atuais; caminho estático não prova fluxo executado. Snapshot é derivado e não uma nova fonte canônica; guardar no memory_store existente somente se couber e mantiver scope/filtro. Sem relação encontrada não significa ausência de risco. Usar as ferramentas de referências/revisão/arquitetura existentes, sem outro índice, banco, hook ou serviço.';
 const canonical = (v) => Array.isArray(v) ? v.map(canonical) : v && typeof v === 'object' ? Object.fromEntries(Object.entries(v).filter(([, v]) => v !== undefined).sort(([a], [b]) => a.localeCompare(b)).map(([k, v]) => [k, canonical(v)])) : v;
 const sha = (v) => createHash('sha256').update(JSON.stringify(canonical(v))).digest('hex');
 const id = (kind, key) => sha([kind, key]).slice(0, 32);
 const safePath = (s) => !!s && !s.startsWith('/') && !s.includes('\\') && !s.split('/').includes('..') && !/^[A-Za-z]:/.test(s) && s.length <= 1000;
 const clean = (s, max = 300) => s.replace(/[\u0000-\u001f\u007f]/g, ' ').slice(0, max);
 export function validateGraphArgs(raw) {
-    if (Object.keys(raw).some(k => !['mode', 'focus', 'to', 'direction', 'max_depth', 'limit', 'offset', 'paths', 'relations', 'include_inferred', 'previous', 'diagram'].includes(k)))
+    if (Object.keys(raw).some(k => !['mode', 'focus', 'to', 'direction', 'max_depth', 'limit', 'offset', 'paths', 'relations', 'include_inferred', 'previous', 'diagram', 'query', 'format', 'max_nodes', 'resolution', 'enrichment'].includes(k)))
         throw Error('Argumento de grafo desconhecido.');
     if (raw.mode !== undefined && !GRAPH_MODES.includes(raw.mode))
         throw Error('mode inválido.');
+    if (raw.query !== undefined && (typeof raw.query !== 'string' || !raw.query.trim() || raw.query.length > 1000))
+        throw Error('query inválida.');
+    if (raw.format !== undefined && !['json', 'graphml', 'cypher', 'svg', 'markdown', 'wiki', 'obsidian', 'html'].includes(String(raw.format)))
+        throw Error('format inválido.');
+    if (raw.max_nodes !== undefined && (!Number.isInteger(raw.max_nodes) || Number(raw.max_nodes) < 1 || Number(raw.max_nodes) > 500))
+        throw Error('max_nodes fora dos limites.');
+    if (raw.resolution !== undefined && (typeof raw.resolution !== 'number' || !Number.isFinite(raw.resolution) || raw.resolution < 0.1 || raw.resolution > 4))
+        throw Error('resolution fora dos limites.');
     for (const key of ['focus', 'to'])
         if (raw[key] !== undefined && (typeof raw[key] !== 'string' || !String(raw[key]).trim() || String(raw[key]).length > 1000))
             throw Error(key + ' inválido.');
@@ -33,11 +43,13 @@ export function validateGraphArgs(raw) {
         throw Error('previous inválido ou maior que1.5MB.');
     return raw;
 }
-export function graphHelp() { return { engine: GRAPH_VERSION, modes: GRAPH_MODES, selectors: 'focus/to aceitam ID, key, caminho exato ou label único. Ambiguidade retorna candidatos sem escolher.', directions: 'A importa/chama B significa A→B; impacto incoming acha consumidores. Both é conexão, não causalidade.', confidence: { EXTRACTED: 'Relação explícita ou registro canônico', INFERRED: 'Alvo resolvido por análise estática; habilitar include_inferred para percorrer', AMBIGUOUS: 'Candidato incerto; nunca percorrido automaticamente' }, snapshot: 'mode snapshot retorna pares compactos/escopo/filtro/digest. Usar previous em diff, mesmo escopo/filtro. Memória existente aceita só snapshots com fits_memory=true; restringir paths para reduzir.', limits: { max_nodes: 3000, max_edges: 10000, max_depth: 8, visited_nodes: 2000, snapshot_max_bytes: 1500000 }, boundaries: { read_only: true, writes_project: false, writes_backlog: false, network: false, launches_agents: false, executes_project: false }, note: 'Algoritmos próprios; não instala Graphify nem substitui busca híbrida/TypeChecker. Agrupamento usa componentes fracos/módulos existentes, não Leiden.' }; }
-export function queryGraph(input, raw) {
+export function graphHelp() { return { engine: GRAPH_VERSION, modes: GRAPH_MODES, selectors: 'focus/to aceitam ID, key, caminho exato ou label único. Ambiguidade retorna candidatos sem escolher.', directions: 'A importa/chama B significa A→B; impacto incoming acha consumidores. Both é conexão, não causalidade.', confidence: { EXTRACTED: 'Relação explícita ou registro canônico', INFERRED: 'Alvo resolvido por análise estática; habilitar include_inferred para percorrer', AMBIGUOUS: 'Candidato incerto; nunca percorrido automaticamente' }, snapshot: 'mode snapshot retorna pares compactos/escopo/filtro/digest. Usar previous em diff, mesmo escopo/filtro. Memória existente aceita só snapshots com fits_memory=true; restringir paths para reduzir.', limits: { max_nodes: 3000, max_edges: 10000, max_depth: 8, visited_nodes: 2000, snapshot_max_bytes: 1500000 }, boundaries: { read_only: true, writes_project: false, writes_backlog: false, network: false, launches_agents: false, executes_project: false }, note: 'Algoritmos próprios; não instala Graphify nem substitui busca híbrida/TypeChecker. Comunidades usam melhoria local de modularidade com partições conexas, não Leiden. Query usa sementes da busca existente quando disponíveis. Export não grava arquivos. Enrichment aceita até200 links ancorados (schema mcp-graph-enrichment/v1; from,to,relation,path,line,quote,source_hash,provider), sempre INFERRED; não executa extratores nem envia fontes.' }; }
+export function queryGraph(original, raw) {
     const args = validateGraphArgs(raw), mode = args.mode ?? 'overview';
     if (mode === 'help')
         return graphHelp();
+    const scoped = { ...original, sources: original.sources.filter(s => !args.paths?.length || args.paths.some(p => s.path === p || s.path.startsWith(p.endsWith('/') ? p : p + '/'))) };
+    const input = enrichGraph(scoped, args.enrichment).input;
     if (!input.scope || input.scope.length > 200)
         throw Error('Scope de grafo obrigatório.');
     const paths = [...(args.paths ?? [])].sort(), inScope = (p) => !paths.length || !!p && paths.some(path => p === path || p.startsWith(path.endsWith('/') ? path : path + '/'));
@@ -170,6 +182,55 @@ export function queryGraph(input, raw) {
         const changes = (a, b, kind) => { const old = new Map(a.map(p => [p[0], p[1]])), now = new Map(b.map(p => [p[0], p[1]])); return [...b.filter(p => !old.has(p[0])).map(p => ({ kind, id: p[0], change: 'ADDED' })), ...a.filter(p => !now.has(p[0])).map(p => ({ kind, id: p[0], change: 'REMOVED_IN_OBSERVED_GRAPH' })), ...b.filter(p => old.has(p[0]) && old.get(p[0]) !== p[1]).map(p => ({ kind, id: p[0], change: 'CHANGED' }))]; };
         results = [...changes(previous.nodes, snapshot.nodes, 'node'), ...changes(previous.edges, snapshot.edges, 'edge')].map(r => ({ ...r, node: r.kind === 'node' ? nodes.get(r.id) ?? { id: r.id, key: previous.nodes.find(n => n[0] === r.id)?.[2], kind: previous.nodes.find(n => n[0] === r.id)?.[3], state: 'PREVIOUS_SNAPSHOT_ONLY' } : undefined, edge: r.kind === 'edge' ? edges.get(r.id) ?? { id: r.id, source: previous.edges.find(e => e[0] === r.id)?.[2], target: previous.edges.find(e => e[0] === r.id)?.[3], relation: previous.edges.find(e => e[0] === r.id)?.[4], confidence: previous.edges.find(e => e[0] === r.id)?.[5], state: 'PREVIOUS_SNAPSHOT_ONLY' } : undefined }));
         extra = { previous_digest: previous.digest, current_digest: snapshot.digest, comparison_complete: previous.complete && complete, note: 'Remoção do grafo observado não prova remoção do código: reindexação, exclusões e cobertura devem ser conferidas. Movimento/rename não são inferidos.' };
+    }
+    else if (mode === 'communities' || mode === 'audit') {
+        const report = topology(allNodes, eligible, args.resolution ?? 1);
+        extra = { topology: { ...report, communities: report.communities.slice(0, 50), communities_truncated: report.communities.length > 50 } };
+        results = mode === 'communities' ? report.communities : report.suggested_questions;
+    }
+    else if (mode === 'export') {
+        extra = { export: graphExport(allNodes, eligible, args.format ?? 'json', { scope: input.scope, coverage: input.coverage, digest: snapshot.digest }, args.max_nodes ?? 200) };
+    }
+    else if (mode === 'explain') {
+        const found = resolve(args.focus);
+        if (found.length !== 1) {
+            status = 'SELECTOR_NOT_UNIQUE_OR_MISSING';
+            extra = { focus_candidates: found.slice(0, 20), focus_total: found.length };
+        }
+        else {
+            const n = found[0];
+            results = eligible.filter(e => e.source === n.id || e.target === n.id).map(e => ({ edge: e, node: nodes.get(e.source === n.id ? e.target : e.source), direction: e.source === n.id ? 'outgoing' : 'incoming' }));
+            extra = { node: n, explanation: 'Relações observadas e respectivas fontes; não é uma conclusão gerada por modelo.' };
+        }
+    }
+    else if (mode === 'query') {
+        if (!args.query)
+            throw Error('query obrigatória.');
+        const terms = args.query.toLocaleLowerCase().match(/[\p{L}\p{N}_]{2,}/gu) ?? [];
+        const seeded = (input.retrieval?.keys ?? []).flatMap(key => resolve(key)).filter((n, i, a) => a.findIndex(x => x.id === n.id) === i).slice(0, 10);
+        const fallback = allNodes.map(n => ({ node: n, score: terms.reduce((sum, t) => sum + ((n.label + ' ' + n.key).toLocaleLowerCase().includes(t) ? 1 : 0), 0) })).filter(x => x.score > 0).sort((a, b) => b.score - a.score || a.node.key.localeCompare(b.node.key)).slice(0, 10).map(x => x.node);
+        const seeds = seeded.length ? seeded : fallback, seen = new Set(seeds.map(n => n.id)), queue = seeds.map(n => ({ id: n.id, depth: 0 }));
+        results = seeds.map(n => ({ node: n, depth: 0, seed: true }));
+        let capped = false;
+        for (let i = 0; i < queue.length; i++) {
+            const at = queue[i];
+            if (at.depth >= maxDepth)
+                continue;
+            for (const step of adj.get(at.id) ?? []) {
+                if (seen.has(step.next))
+                    continue;
+                if (seen.size >= 200) {
+                    capped = true;
+                    break;
+                }
+                seen.add(step.next);
+                queue.push({ id: step.next, depth: at.depth + 1 });
+                results.push({ node: nodes.get(step.next), depth: at.depth + 1, edge: step.edge, traversal: step.traversal });
+            }
+        }
+        extra = { retrieval: { provider: seeded.length ? input.retrieval.provider : 'graph_label_lexical_fallback', warnings: input.retrieval?.warnings ?? [], seeds: seeds.map(n => n.id) }, visited_nodes: seen.size, traversal_capped: capped, answer_generated: false };
+        if (!seeds.length)
+            status = 'NO_SEEDS_WITHIN_CURRENT_SCOPE';
     }
     else {
         const degree = new Map();

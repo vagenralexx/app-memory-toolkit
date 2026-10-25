@@ -1,4 +1,4 @@
-# Catálogo MCP 1.0.0-rc.7
+# Catálogo MCP 1.0.0-rc.8
 
 Catálogo obtido por tools/list do servidor real: **65 ferramentas**. O contrato completo de argumentos está em [mcp-tools.json](mcp-tools.json).
 
@@ -53,7 +53,7 @@ Todas as operações por projeto usam project_id. A raiz é indicada pelo usuár
 | `project_import` | Importa uma exportação com checksum numa base sem o mesmo projeto. root é a raiz explicitamente autorizada; não modifica código. |
 | `memory_backup` | Cria snapshot SQLite consistente de toda a base, em backups. Não copia pesos do modelo nem configurações externas. |
 | `diagnose` | Diagnóstico local de runtime, SQLite, formatos de conexão e disponibilidade opcional do modelo. Não é atestado de segurança. |
-| `get_graph_context` | Caminhos, impacto transitivo estático, concentração, ciclos, justificativas e snapshots/diff sobre índices/relações existentes. Direção e evidência por ligação; inferências opt-in. Read-only; não comprova runtime nem cria outro banco. |
+| `get_graph_context` | Consulta por assunto, explicações, comunidades, auditoria estrutural, exportações, SQL, caminhos, impacto transitivo estático e snapshots/diff sobre índices/relações existentes. Direção e evidência por ligação; inferências opt-in. Read-only; não comprova runtime nem cria outro banco. |
 | `get_founder_guidance` | Negócio/landing:11 módulos Founder, lacunas de briefing, custos/projeções, preços por origem, painel opcional reproduzível e relatório com fontes. Read-only, sem rede, agentes automáticos ou publicação; reutiliza onboarding/memória/backlog/design. |
 | `get_ponytail_guidance` | Engenharia reuse-first inspirada no Ponytail: reuso, diff local/staged/commit/branch/patch, auditoria de qualidade, relatório vinculado ao snapshot, dívida e métricas existentes. Somente leitura, sem aprovação automática, hooks ou fila paralela. |
 | `memory_list` | Lista metadados de memória com paginação, sem carregar valores; padrões e notas isolados por projeto. |

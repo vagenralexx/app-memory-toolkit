@@ -1,6 +1,6 @@
-# Grafo de contexto — rc.7
+# Grafo de contexto — rc.8
 
-get_graph_context reúne seis modos em uma ferramenta read-only, sem novo banco, MCP externo ou runtime Graphify. Primeiro implementado no original e depois portado o mesmo núcleo. Inspirado na [arquitetura Graphify](https://github.com/Graphify-Labs/graphify/blob/v8/ARCHITECTURE.md), com implementação independente e índices próprios existentes. REA não foi necessário: a referência possui código-fonte aberto.
+get_graph_context reúne onze modos em uma ferramenta read-only, sem novo banco, MCP externo ou runtime Graphify. Primeiro implementado no original e depois portado o mesmo núcleo. Inspirado na [arquitetura Graphify](https://github.com/Graphify-Labs/graphify/blob/v8/ARCHITECTURE.md), com implementação independente e índices próprios existentes. REA não foi necessário: a referência possui código-fonte aberto.
 
 | Modo | Uso |
 | --- | --- |
@@ -9,6 +9,11 @@ get_graph_context reúne seis modos em uma ferramenta read-only, sem novo banco,
 | impact | Alcance transitivo estático; padrão incoming, consumidores diretos/indiretos |
 | snapshot | Snapshot derivado determinístico com escopo/filtro/digest e tamanho compatível com memória |
 | diff | Nós/ligações adicionados, removidos do grafo observado ou alterados frente a previous |
+| query | Sementes da busca existente, com expansão de vizinhos atuais e evidências; query obrigatória |
+| explain | Nó selecionado e suas relações com direção e fonte |
+| communities | Melhoria local de modularidade e refinamento de partições conexas; resolution entre0.1 e4 |
+| audit | Pontes estruturais, articulações, PageRank e perguntas sugeridas; não aprova arquitetura |
+| export | JSON, GraphML, Cypher parametrizado, SVG, Markdown, wiki, Obsidian e HTML interativo |
 | help | Contratos, sentidos de direção, proveniência e limites |
 
 ```json
@@ -47,3 +52,34 @@ Agrupamento usa componentes fracos e módulos já existentes; não implementa Le
 Em refactor/review, consultar path/impact para mapear candidatos e conferir código atual com get_code_references/get_symbol_context, arquitetura e get_ponytail_guidance existentes. Ler callers/testes/config; executar checks pertinentes pelo host. Manter tarefas/checkpoints/handoff no fluxo existente. Setup/boot incluem contrato compacto; recarregar clientes após atualização. O servidor não inicia agentes ou comandos do projeto, não pesquisa rede e não autoriza publicação.
 
 Matriz: [GRAPH-MAPPING.md](GRAPH-MAPPING.md). Hash de origem/transpilação em graph-port.json. Não adiciona parsers de dezenas de linguagens, SQL, mídia, Cloud, conectores de incidente ou verificação formal nesta etapa. Esses recursos da referência não são capacidades entregues automaticamente.
+
+
+## Ampliação rc.8: execução e limites
+
+```json
+{"project_id":"ID","mode":"query","query":"como pedidos usam o estoque?","direction":"both","max_depth":2}
+{"project_id":"ID","mode":"communities","resolution":1}
+{"project_id":"ID","mode":"explain","focus":"src/orders.ts"}
+{"project_id":"ID","mode":"audit"}
+{"project_id":"ID","mode":"export","format":"html","max_nodes":200}
+```
+
+Query usa retrieve no App Memory e searchKnowledge no original, ambos existentes. Só sementes presentes no recorte atual entram na expansão. Sem sementes válidas, usa correspondência lexical nos rótulos e informa esse fallback. Respostas retornam contexto/evidência, sem gerar uma conclusão por LLM. A direção padrão continua outgoing; both deve ser pedido quando se deseja contexto em ambos os sentidos. No máximo200 nós são visitados nesse modo.
+
+O campo export retorna conteúdo e nome sugerido; wiki/Obsidian retornam uma lista de arquivos com nomes derivados de IDs. O agente pode salvar esses artefatos no destino autorizado. Nada é gravado automaticamente. Até500 nós e1000 ligações por exportação; truncated revela o recorte. Cypher é texto parametrizado com parâmetros separados: não conecta nem escreve em Neo4j/FalkorDB. HTML é autocontido, permite buscar rótulos, filtrar relações, selecionar nós, pan/zoom e redefinir; não usa serviços externos. SVG usa disposição circular simples.
+
+SQL lê declarações explícitas CREATE TABLE/VIEW/INDEX/TRIGGER/FUNCTION/PROCEDURE e referências REFERENCES entre tabelas do recorte, com identificadores citados e qualificados. Comentários e valores literais não geram declarações. É um subconjunto conservador de DDL, não um parser AST de todos os dialetos; não extrai colunas, SQL dinâmico, SELECT completo ou impacto de migrations. Alvos ambíguos/ausentes são avisos. O cache incremental é somente dessa extração SQL, por escopo/caminho/conteúdo, em memória do processo e limitado a256 entradas. Mudanças invalidam a entrada; arquivos removidos são descartados. A varredura/hash atuais e os índices existentes continuam necessários; não há watcher ou cache global de TypeChecker novo.
+
+## Vínculos semânticos fornecidos pelo host
+
+O agente/modelo pode propor relações para arquivos, documentação, decisões ou símbolos já observados. Formato:
+
+```json
+{"mode":"overview","include_inferred":true,"enrichment":{"schema":"mcp-graph-enrichment/v1","links":[{"from":"file:docs/decision.md","to":"file:src/orders.ts","relation":"explains","path":"docs/decision.md","source_hash":"HASH_ATUAL","line":4,"quote":"trecho literal da linha4","provider":"agente-do-host"}]}}
+```
+
+O envelope aceita até200KB e200 links. Cada link exige caminho dentro das fontes atuais, hash exato, linha/trecho literal e alvos existentes; campos desconhecidos, fontes obsoletas e âncoras fora do recorte são rejeitados e contabilizados. Relações permitidas: mentions, explains, implements, related_to, depends_on, calls, imports, references. Todas permanecem INFERRED: conferir uma âncora não comprova a conclusão semântica nem a correção de um extrator externo. Não há execução automática do Graphify, leitura arbitrária de caminhos, upload, credencial, modelo ou subprocesso. Propostas duram a consulta; persistência exige as ferramentas canônicas de memória já existentes e sua revisão normal.
+
+Comunidades e pontes são calculadas sobre projeção não direcionada, desconsiderando contains/rationale; PageRank preserva a direção das demais relações. A implementação usa melhoria local determinística de modularidade e separação de partições desconectadas. Não é Leiden nem Louvain multinível. Comunidades são hipóteses estruturais, pontes não provam falha em runtime e perguntas não são tarefas aceitas automaticamente.
+
+Confira [o mapa auditável de oportunidades](GRAPHIFY-OPPORTUNITIES.md). O conjunto não equivale a100% do produto Graphify/Cloud.
