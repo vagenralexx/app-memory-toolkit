@@ -1,6 +1,6 @@
 # Instalar e começar pelo agente
 
-**rc.9 candidata local:** use o pacote/ZIP desta entrega. Os comandos por tag rc.9 só devem ser usados após sua sincronização no GitHub; a última versão enviada antes desta etapa é rc.5.
+**Versão de avaliação rc.9:** instale pela tag `v1.0.0-rc.9` ou pelos arquivos da [release no GitHub](https://github.com/vagenralexx/app-memory-toolkit/releases/tag/v1.0.0-rc.9). O pacote não está publicado no npm.
 
 Repositório: https://github.com/vagenralexx/app-memory-toolkit
 Versão de avaliação: 1.0.0-rc.9. Node.js 24+, npm e Git. A licença ainda não foi decidida. Confira a visibilidade e as permissões do repositório antes de distribuir ou instalar. Não informe tokens na conversa.
