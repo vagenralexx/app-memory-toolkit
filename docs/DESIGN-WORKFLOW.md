@@ -1,4 +1,4 @@
-# UI/UX complementar — candidata local rc.12
+# UI/UX complementar — rc.12
 
 Esta integração amplia get_design_guidance, preservando as66 ferramentas existentes. Primeiro implementada/testada no original e depois portados os mesmos2 módulos de workflow/recursos. Não instala skills globais, extensões Chrome, outra biblioteca de animação ou outro MCP. O agente usa as conexões e permissões de navegador que já possui.
 

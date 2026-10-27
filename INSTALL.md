@@ -1,6 +1,6 @@
 # Instalar e começar pelo agente
 
-**rc.12 candidata local:** esta ampliação de UI/UX ainda não foi publicada no GitHub. Use o pacote/ZIP local. A última versão publicada é v1.0.0-rc.11; os comandos por tag rc.12 só funcionam após sincronização autorizada.
+**Versão de avaliação rc.12:** instale pela tag `v1.0.0-rc.12` ou pelos arquivos da [release no GitHub](https://github.com/vagenralexx/app-memory-toolkit/releases/tag/v1.0.0-rc.12). O pacote não está publicado no npm.
 
 Repositório: https://github.com/vagenralexx/app-memory-toolkit
 Versão de avaliação: 1.0.0-rc.12. Node.js 24+, npm e Git. A licença ainda não foi decidida. Confira a visibilidade e as permissões do repositório antes de distribuir ou instalar. Não informe tokens na conversa.
