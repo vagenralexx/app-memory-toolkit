@@ -1,0 +1,546 @@
+[
+  {
+    "id": "claude",
+    "name": "Claude",
+    "category": "AI & LLM Platforms",
+    "url": "https://getdesign.md/claude/design-md",
+    "description": "Anthropic's AI assistant. Warm terracotta accent, clean editorial layout",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "cohere",
+    "name": "Cohere",
+    "category": "AI & LLM Platforms",
+    "url": "https://getdesign.md/cohere/design-md",
+    "description": "Enterprise AI platform. Vibrant gradients, data-rich dashboard aesthetic",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "elevenlabs",
+    "name": "ElevenLabs",
+    "category": "AI & LLM Platforms",
+    "url": "https://getdesign.md/elevenlabs/design-md",
+    "description": "AI voice platform. Dark cinematic UI, audio-waveform aesthetics",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "minimax",
+    "name": "Minimax",
+    "category": "AI & LLM Platforms",
+    "url": "https://getdesign.md/minimax/design-md",
+    "description": "AI model provider. Bold dark interface with neon accents",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "mistral.ai",
+    "name": "Mistral AI",
+    "category": "AI & LLM Platforms",
+    "url": "https://getdesign.md/mistral.ai/design-md",
+    "description": "Open-weight LLM provider. French-engineered minimalism, purple-toned",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "ollama",
+    "name": "Ollama",
+    "category": "AI & LLM Platforms",
+    "url": "https://getdesign.md/ollama/design-md",
+    "description": "Run LLMs locally. Terminal-first, monochrome simplicity",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "opencode.ai",
+    "name": "OpenCode AI",
+    "category": "AI & LLM Platforms",
+    "url": "https://getdesign.md/opencode.ai/design-md",
+    "description": "AI coding platform. Developer-centric dark theme",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "replicate",
+    "name": "Replicate",
+    "category": "AI & LLM Platforms",
+    "url": "https://getdesign.md/replicate/design-md",
+    "description": "Run ML models via API. Clean white canvas, code-forward",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "runwayml",
+    "name": "RunwayML",
+    "category": "AI & LLM Platforms",
+    "url": "https://getdesign.md/runwayml/design-md",
+    "description": "AI video generation. Cinematic dark UI, media-rich layout",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "together.ai",
+    "name": "Together AI",
+    "category": "AI & LLM Platforms",
+    "url": "https://getdesign.md/together.ai/design-md",
+    "description": "Open-source AI infrastructure. Technical, blueprint-style design",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "voltagent",
+    "name": "VoltAgent",
+    "category": "AI & LLM Platforms",
+    "url": "https://getdesign.md/voltagent/design-md",
+    "description": "AI agent framework. Void-black canvas, emerald accent, terminal-native",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "x.ai",
+    "name": "xAI",
+    "category": "AI & LLM Platforms",
+    "url": "https://getdesign.md/x.ai/design-md",
+    "description": "Elon Musk's AI lab. Stark monochrome, futuristic minimalism",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "cursor",
+    "name": "Cursor",
+    "category": "Developer Tools & IDEs",
+    "url": "https://getdesign.md/cursor/design-md",
+    "description": "AI-first code editor. Sleek dark interface, gradient accents",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "expo",
+    "name": "Expo",
+    "category": "Developer Tools & IDEs",
+    "url": "https://getdesign.md/expo/design-md",
+    "description": "React Native platform. Dark theme, tight letter-spacing, code-centric",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "lovable",
+    "name": "Lovable",
+    "category": "Developer Tools & IDEs",
+    "url": "https://getdesign.md/lovable/design-md",
+    "description": "AI full-stack builder. Playful gradients, friendly dev aesthetic",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "raycast",
+    "name": "Raycast",
+    "category": "Developer Tools & IDEs",
+    "url": "https://getdesign.md/raycast/design-md",
+    "description": "Productivity launcher. Sleek dark chrome, vibrant gradient accents",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "superhuman",
+    "name": "Superhuman",
+    "category": "Developer Tools & IDEs",
+    "url": "https://getdesign.md/superhuman/design-md",
+    "description": "Fast email client. Premium dark UI, keyboard-first, purple glow",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "vercel",
+    "name": "Vercel",
+    "category": "Developer Tools & IDEs",
+    "url": "https://getdesign.md/vercel/design-md",
+    "description": "Frontend deployment platform. Black and white precision, Geist font",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "warp",
+    "name": "Warp",
+    "category": "Developer Tools & IDEs",
+    "url": "https://getdesign.md/warp/design-md",
+    "description": "Modern terminal. Dark IDE-like interface, block-based command UI",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "clickhouse",
+    "name": "ClickHouse",
+    "category": "Backend, Database & DevOps",
+    "url": "https://getdesign.md/clickhouse/design-md",
+    "description": "Fast analytics database. Yellow-accented, technical documentation style",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "composio",
+    "name": "Composio",
+    "category": "Backend, Database & DevOps",
+    "url": "https://getdesign.md/composio/design-md",
+    "description": "Tool integration platform. Modern dark with colorful integration icons",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "hashicorp",
+    "name": "HashiCorp",
+    "category": "Backend, Database & DevOps",
+    "url": "https://getdesign.md/hashicorp/design-md",
+    "description": "Infrastructure automation. Enterprise-clean, black and white",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "mongodb",
+    "name": "MongoDB",
+    "category": "Backend, Database & DevOps",
+    "url": "https://getdesign.md/mongodb/design-md",
+    "description": "Document database. Green leaf branding, developer documentation focus",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "posthog",
+    "name": "PostHog",
+    "category": "Backend, Database & DevOps",
+    "url": "https://getdesign.md/posthog/design-md",
+    "description": "Product analytics. Playful hedgehog branding, developer-friendly dark UI",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "sanity",
+    "name": "Sanity",
+    "category": "Backend, Database & DevOps",
+    "url": "https://getdesign.md/sanity/design-md",
+    "description": "Headless CMS. Red accent, content-first editorial layout",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "sentry",
+    "name": "Sentry",
+    "category": "Backend, Database & DevOps",
+    "url": "https://getdesign.md/sentry/design-md",
+    "description": "Error monitoring. Dark dashboard, data-dense, pink-purple accent",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "supabase",
+    "name": "Supabase",
+    "category": "Backend, Database & DevOps",
+    "url": "https://getdesign.md/supabase/design-md",
+    "description": "Open-source Firebase alternative. Dark emerald theme, code-first",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "cal",
+    "name": "Cal.com",
+    "category": "Productivity & SaaS",
+    "url": "https://getdesign.md/cal/design-md",
+    "description": "Open-source scheduling. Clean neutral UI, developer-oriented simplicity",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "intercom",
+    "name": "Intercom",
+    "category": "Productivity & SaaS",
+    "url": "https://getdesign.md/intercom/design-md",
+    "description": "Customer messaging. Friendly blue palette, conversational UI patterns",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "linear.app",
+    "name": "Linear",
+    "category": "Productivity & SaaS",
+    "url": "https://getdesign.md/linear.app/design-md",
+    "description": "Project management for engineers. Ultra-minimal, precise, purple accent",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "mintlify",
+    "name": "Mintlify",
+    "category": "Productivity & SaaS",
+    "url": "https://getdesign.md/mintlify/design-md",
+    "description": "Documentation platform. Clean, green-accented, reading-optimized",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "notion",
+    "name": "Notion",
+    "category": "Productivity & SaaS",
+    "url": "https://getdesign.md/notion/design-md",
+    "description": "All-in-one workspace. Warm minimalism, serif headings, soft surfaces",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "resend",
+    "name": "Resend",
+    "category": "Productivity & SaaS",
+    "url": "https://getdesign.md/resend/design-md",
+    "description": "Email API for developers. Minimal dark theme, monospace accents",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "zapier",
+    "name": "Zapier",
+    "category": "Productivity & SaaS",
+    "url": "https://getdesign.md/zapier/design-md",
+    "description": "Automation platform. Warm orange, friendly illustration-driven",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "airtable",
+    "name": "Airtable",
+    "category": "Design & Creative Tools",
+    "url": "https://getdesign.md/airtable/design-md",
+    "description": "Spreadsheet-database hybrid. Colorful, friendly, structured data aesthetic",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "clay",
+    "name": "Clay",
+    "category": "Design & Creative Tools",
+    "url": "https://getdesign.md/clay/design-md",
+    "description": "Creative agency. Organic shapes, soft gradients, art-directed layout",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "figma",
+    "name": "Figma",
+    "category": "Design & Creative Tools",
+    "url": "https://getdesign.md/figma/design-md",
+    "description": "Collaborative design tool. Vibrant multi-color, playful yet professional",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "framer",
+    "name": "Framer",
+    "category": "Design & Creative Tools",
+    "url": "https://getdesign.md/framer/design-md",
+    "description": "Website builder. Bold black and blue, motion-first, design-forward",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "miro",
+    "name": "Miro",
+    "category": "Design & Creative Tools",
+    "url": "https://getdesign.md/miro/design-md",
+    "description": "Visual collaboration. Bright yellow accent, infinite canvas aesthetic",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "webflow",
+    "name": "Webflow",
+    "category": "Design & Creative Tools",
+    "url": "https://getdesign.md/webflow/design-md",
+    "description": "Visual web builder. Blue-accented, polished marketing site aesthetic",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "binance",
+    "name": "Binance",
+    "category": "Fintech & Crypto",
+    "url": "https://getdesign.md/binance/design-md",
+    "description": "Crypto exchange. Bold Binance Yellow on monochrome, trading-floor urgency",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "coinbase",
+    "name": "Coinbase",
+    "category": "Fintech & Crypto",
+    "url": "https://getdesign.md/coinbase/design-md",
+    "description": "Crypto exchange. Clean blue identity, trust-focused, institutional feel",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "kraken",
+    "name": "Kraken",
+    "category": "Fintech & Crypto",
+    "url": "https://getdesign.md/kraken/design-md",
+    "description": "Crypto trading platform. Purple-accented dark UI, data-dense dashboards",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "mastercard",
+    "name": "Mastercard",
+    "category": "Fintech & Crypto",
+    "url": "https://getdesign.md/mastercard/design-md",
+    "description": "Global payments network. Warm cream canvas, orbital pill shapes, editorial warmth",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "revolut",
+    "name": "Revolut",
+    "category": "Fintech & Crypto",
+    "url": "https://getdesign.md/revolut/design-md",
+    "description": "Digital banking. Sleek dark interface, gradient cards, fintech precision",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "stripe",
+    "name": "Stripe",
+    "category": "Fintech & Crypto",
+    "url": "https://getdesign.md/stripe/design-md",
+    "description": "Payment infrastructure. Signature purple gradients, weight-300 elegance",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "wise",
+    "name": "Wise",
+    "category": "Fintech & Crypto",
+    "url": "https://getdesign.md/wise/design-md",
+    "description": "International money transfer. Bright green accent, friendly and clear",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "airbnb",
+    "name": "Airbnb",
+    "category": "E-commerce & Retail",
+    "url": "https://getdesign.md/airbnb/design-md",
+    "description": "Travel marketplace. Warm coral accent, photography-driven, rounded UI",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "meta",
+    "name": "Meta",
+    "category": "E-commerce & Retail",
+    "url": "https://getdesign.md/meta/design-md",
+    "description": "Tech retail store. Photography-first, binary light/dark surfaces, Meta Blue CTAs",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "nike",
+    "name": "Nike",
+    "category": "E-commerce & Retail",
+    "url": "https://getdesign.md/nike/design-md",
+    "description": "Athletic retail. Monochrome UI, massive uppercase Futura, full-bleed photography",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "shopify",
+    "name": "Shopify",
+    "category": "E-commerce & Retail",
+    "url": "https://getdesign.md/shopify/design-md",
+    "description": "E-commerce platform. Dark-first cinematic, neon green accent, ultra-light display type",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "apple",
+    "name": "Apple",
+    "category": "Media & Consumer Tech",
+    "url": "https://getdesign.md/apple/design-md",
+    "description": "Consumer electronics. Premium white space, SF Pro, cinematic imagery",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "ibm",
+    "name": "IBM",
+    "category": "Media & Consumer Tech",
+    "url": "https://getdesign.md/ibm/design-md",
+    "description": "Enterprise technology. Carbon design system, structured blue palette",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "nvidia",
+    "name": "NVIDIA",
+    "category": "Media & Consumer Tech",
+    "url": "https://getdesign.md/nvidia/design-md",
+    "description": "GPU computing. Green-black energy, technical power aesthetic",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "pinterest",
+    "name": "Pinterest",
+    "category": "Media & Consumer Tech",
+    "url": "https://getdesign.md/pinterest/design-md",
+    "description": "Visual discovery platform. Red accent, masonry grid, image-first",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "playstation",
+    "name": "PlayStation",
+    "category": "Media & Consumer Tech",
+    "url": "https://getdesign.md/playstation/design-md",
+    "description": "Gaming console retail. Three-surface channel layout, cyan hover-scale interaction",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "spacex",
+    "name": "SpaceX",
+    "category": "Media & Consumer Tech",
+    "url": "https://getdesign.md/spacex/design-md",
+    "description": "Space technology. Stark black and white, full-bleed imagery, futuristic",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "spotify",
+    "name": "Spotify",
+    "category": "Media & Consumer Tech",
+    "url": "https://getdesign.md/spotify/design-md",
+    "description": "Music streaming. Vibrant green on dark, bold type, album-art-driven",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "theverge",
+    "name": "The Verge",
+    "category": "Media & Consumer Tech",
+    "url": "https://getdesign.md/theverge/design-md",
+    "description": "Tech editorial media. Acid-mint and ultraviolet accents, Manuka display type",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "uber",
+    "name": "Uber",
+    "category": "Media & Consumer Tech",
+    "url": "https://getdesign.md/uber/design-md",
+    "description": "Mobility platform. Bold black and white, tight type, urban energy",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "vodafone",
+    "name": "Vodafone",
+    "category": "Media & Consumer Tech",
+    "url": "https://getdesign.md/vodafone/design-md",
+    "description": "Global telecom brand. Monumental uppercase display, Vodafone Red chapter bands",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "wired",
+    "name": "WIRED",
+    "category": "Media & Consumer Tech",
+    "url": "https://getdesign.md/wired/design-md",
+    "description": "Tech magazine. Paper-white broadsheet density, custom serif, ink-blue links",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "bmw",
+    "name": "BMW",
+    "category": "Automotive",
+    "url": "https://getdesign.md/bmw/design-md",
+    "description": "Luxury automotive. Dark premium surfaces, precise German engineering aesthetic",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "bugatti",
+    "name": "Bugatti",
+    "category": "Automotive",
+    "url": "https://getdesign.md/bugatti/design-md",
+    "description": "Luxury hypercar. Cinema-black canvas, monochrome austerity, monumental display type",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "ferrari",
+    "name": "Ferrari",
+    "category": "Automotive",
+    "url": "https://getdesign.md/ferrari/design-md",
+    "description": "Luxury automotive. Chiaroscuro black-white editorial, Ferrari Red with extreme sparseness",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "lamborghini",
+    "name": "Lamborghini",
+    "category": "Automotive",
+    "url": "https://getdesign.md/lamborghini/design-md",
+    "description": "Luxury automotive. True black cathedral, gold accent, LamboType custom Neo-Grotesk",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "renault",
+    "name": "Renault",
+    "category": "Automotive",
+    "url": "https://getdesign.md/renault/design-md",
+    "description": "French automotive. Vivid aurora gradients, NouvelR proprietary typeface, zero-radius buttons",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  },
+  {
+    "id": "tesla",
+    "name": "Tesla",
+    "category": "Automotive",
+    "url": "https://getdesign.md/tesla/design-md",
+    "description": "Electric vehicles. Radical subtraction, cinematic full-viewport photography, Universal Sans",
+    "availability": "LINK_ONLY_NOT_DOWNLOADED"
+  }
+]

@@ -1,5 +1,11 @@
 # Histórico
 
+## 1.0.0-rc.12 — candidata local
+
+- Amplia get_design_guidance com11 modos complementares de UI/UX: direção page/app,68 links de referência, captura por host, normalização TypeUI, movimento contextual, revisão e proposta DESIGN.md/tokens.
+- Preserva corpus/HIG/WCAG e integra memória/backlog/regras existentes; sem outra ferramenta MCP, extensão ou skill global.
+- Fontes MIT fixadas com licenças/SHA; dois módulos compartilhados implementados primeiro no original e portados com transpilação reproduzível.
+
 ## 1.0.0-rc.11
 
 - Compara a raiz importada com realpath no teste de portabilidade, aceitando a expansão canônica de caminhos abreviados do Windows CI. Sem alteração de runtime.

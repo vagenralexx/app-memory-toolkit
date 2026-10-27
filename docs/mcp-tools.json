@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-rc.11",
+  "version": "1.0.0-rc.12",
   "tools": [
     {
       "name": "start_project",
@@ -1865,6 +1865,13 @@
               "standard",
               "full"
             ]
+          },
+          "workflow": {
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {}
           },
           "cache_mode": {
             "default": "full",

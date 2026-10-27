@@ -1,3 +1,4 @@
+import{projectDesignWorkflow}from'./design-workflow-context.js';
 import * as z from 'zod/v4';
 import { join } from 'node:path';
 import { mkdir } from 'node:fs/promises';
@@ -67,8 +68,8 @@ export function registerExtendedTools(tool,store) {
     return {...pack(rows,{budget:args.budget}),relations:links,depth:args.depth};
   });
   tool('get_design_guidance','Corpus próprio de padrões de UI, fontes oficiais, exemplos e regras do projeto; referência sem afirmar implementação ou conformidade.',{
-    project_id:project,topic:z.string().min(1).max(1000),detail:z.enum(['standard','full']).default('standard')
-  },true,args=>designGuidance(store,args.project_id,args.topic,args.detail));
+    project_id:project,topic:z.string().min(1).max(1000),detail:z.enum(['standard','full']).default('standard'),workflow:z.record(z.string(),z.unknown()).optional()
+  },true,async args=>args.workflow?{...designGuidance(store,args.project_id,args.topic,args.detail),workflow:await projectDesignWorkflow(store,args.project_id,args.topic,args.workflow)}:designGuidance(store,args.project_id,args.topic,args.detail));
   tool('analyze_knowledge_drift','Classifica drift de fontes, referências documentais, movimentos, símbolos e afirmações estruturadas. Preserva requisitos futuros e ADRs; não reescreve fontes.',{
     project_id:project,limit:z.number().int().min(1).max(100).default(30),offset:z.number().int().min(0).default(0),other_project_ids:z.array(z.string().uuid()).max(5).default([])
   },true,async args=>({...await analyzeDrift(store,args.project_id,args),documents:await documentDrift(store,args.project_id,args)}));

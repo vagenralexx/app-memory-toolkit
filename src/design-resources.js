@@ -1,0 +1,53 @@
+// Generated from design-resources.ts; first validated in original MCP.
+/** Pinned offline data and the actual TypeUI normalizer. No browser is controlled by this loader. */
+import fs from 'node:fs';
+import path from 'node:path';
+import { pathToFileURL } from 'node:url';
+import { createHash } from 'node:crypto';
+import { designWorkflow, validateDesignWorkflow } from './design-workflow.js';
+const digest = (v) => createHash('sha256').update(v).digest('hex');
+const cache = new Map();
+export const STYLE_CAPTURE_SCRIPT = String.raw `(()=>{
+ const rows=[...document.querySelectorAll('body,h1,h2,h3,p,a,button,input,select,textarea,label,nav,header,main,section,article,table,th,td,[role="button"]')].filter(el=>{const r=el.getBoundingClientRect(),s=getComputedStyle(el);return r.width>0&&r.height>0&&s.visibility!=='hidden'&&s.display!=='none';}).slice(0,280);
+ const result={source:{url:location.origin+location.pathname,title:''},sampledAt:new Date().toISOString(),totalElements:document.getElementsByTagName('*').length,sampledElements:rows.length,typography:[],colors:[],spacing:[],radius:[],shadows:[],motion:[],components:[]};
+ for(const el of rows){const s=getComputedStyle(el);result.typography.push({fontFamily:s.fontFamily,fontSize:s.fontSize,lineHeight:s.lineHeight,fontWeight:s.fontWeight,letterSpacing:s.letterSpacing});result.colors.push({textColor:s.color,backgroundColor:s.backgroundColor,borderColor:s.borderColor,outlineColor:s.outlineColor});result.spacing.push({marginTop:s.marginTop,marginRight:s.marginRight,marginBottom:s.marginBottom,marginLeft:s.marginLeft,paddingTop:s.paddingTop,paddingRight:s.paddingRight,paddingBottom:s.paddingBottom,paddingLeft:s.paddingLeft,gap:s.gap});result.radius.push({borderTopLeftRadius:s.borderTopLeftRadius,borderTopRightRadius:s.borderTopRightRadius,borderBottomLeftRadius:s.borderBottomLeftRadius,borderBottomRightRadius:s.borderBottomRightRadius});result.shadows.push({boxShadow:s.boxShadow});result.motion.push({transitionDuration:s.transitionDuration,transitionTimingFunction:s.transitionTimingFunction,animationDuration:s.animationDuration,animationTimingFunction:s.animationTimingFunction});}
+ for(const[type,selector]of[['button','button,[role="button"]'],['input','input,select,textarea'],['table','table'],['navigation','nav']])result.components.push({type,count:document.querySelectorAll(selector).length});return result;
+})()`;
+export function loadDesignBundle(root) {
+    const key = path.resolve(root);
+    const old = cache.get(key);
+    if (old)
+        return old;
+    const read = (rel) => JSON.parse(fs.readFileSync(path.join(root, rel), 'utf8')), provenance = read('sources.json'), taste = 'taste/skills/taste-skill/library/';
+    const resources = [];
+    for (const [provider, entry] of Object.entries(provenance)) {
+        for (const file of entry.files) {
+            if (!/references\/.*\.(md|html)$|library\/.*\.json$|assets\/(?:base|app|charts)\.(?:css|js)$/.test(file.path))
+                continue;
+            const marker = file.path.includes('/references/') ? 'references' : file.path.includes('/library/') ? 'library' : 'assets';
+            const tail = file.path.split('/').slice(file.path.split('/').indexOf(marker)).join('/');
+            resources.push({ id: provider + ':' + tail, path: path.join(provider, file.path), source: entry.repository + '/blob/' + entry.commit + '/' + file.path });
+        }
+    }
+    const result = { directions: read(taste + 'directions.json'), app: read(taste + 'app.json'), palettes: read(taste + 'palettes.json'), types: read(taste + 'type.json'), heroes: read(taste + 'heroes.json'), sections: read(taste + 'sections.json'), motions: read(taste + 'motions.json'), photos: read(taste + 'photos.json'), sites: read(taste + 'sites.json'), catalog: read('catalog/index.json'), provenance, resources };
+    cache.set(key, result);
+    return result;
+}
+export async function runDesignWorkflow(root, input, raw) {
+    const a = validateDesignWorkflow(raw), bundle = loadDesignBundle(root);
+    let normalized, resource;
+    if (a.capture) {
+        const normalizerPath = path.join(root, 'extractor/lib/normalize.mjs'), entry = bundle.provenance.extractor.files.find((f) => f.path === 'lib/normalize.mjs');
+        if (!entry || digest(fs.readFileSync(normalizerPath, 'utf8')) !== entry.sha256)
+            throw Error('Normalizador TypeUI não corresponde ao snapshot fixado.');
+        const { normalizeExtractedStyles } = await import(pathToFileURL(normalizerPath).href);
+        normalized = normalizeExtractedStyles(a.capture);
+    }
+    if (a.resource_id) {
+        const item = bundle.resources.find(r => r.id === a.resource_id);
+        if (!item)
+            throw Error('resource_id fora da lista permitida.');
+        resource = { id: item.id, source: item.source, content: fs.readFileSync(path.join(root, item.path), 'utf8') };
+    }
+    return designWorkflow({ ...input, bundle, normalized, resource, capture_script: STYLE_CAPTURE_SCRIPT }, a);
+}

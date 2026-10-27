@@ -7,3 +7,6 @@
 *.yml text eol=lf
 *.cmd text eol=crlf
 *.ts text eol=lf
+
+# Pinned upstream source hashes must survive checkout byte-for-byte.
+resources/design/** -text

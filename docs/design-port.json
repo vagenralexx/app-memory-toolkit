@@ -1,0 +1,14 @@
+{
+  "engine_version": "1.0.0",
+  "first_implementation": "original_mcp",
+  "modules": {
+    "design-workflow": "ee6f85d1dc444a0f5ee55b3a7f6a21ad4a3e2c2e2794b1495e5ceee93268df11",
+    "design-resources": "e7f3adc7a9699c3ecade7b88263497a8be42cd7fb3db86c7b0c8c150d8215812"
+  },
+  "transpiler": "typescript@5.9.3",
+  "upstream_code_reused": [
+    "TypeUI normalize.mjs (MIT)"
+  ],
+  "upstream_resources": "resources/design/sources.json",
+  "does_not_install_client_skills": true
+}

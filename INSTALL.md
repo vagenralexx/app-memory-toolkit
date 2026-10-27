@@ -1,13 +1,13 @@
 # Instalar e começar pelo agente
 
-**Versão de avaliação rc.11:** instale pela tag `v1.0.0-rc.11` ou pelos arquivos da [release no GitHub](https://github.com/vagenralexx/app-memory-toolkit/releases/tag/v1.0.0-rc.11). O pacote não está publicado no npm.
+**rc.12 candidata local:** esta ampliação de UI/UX ainda não foi publicada no GitHub. Use o pacote/ZIP local. A última versão publicada é v1.0.0-rc.11; os comandos por tag rc.12 só funcionam após sincronização autorizada.
 
 Repositório: https://github.com/vagenralexx/app-memory-toolkit
-Versão de avaliação: 1.0.0-rc.11. Node.js 24+, npm e Git. A licença ainda não foi decidida. Confira a visibilidade e as permissões do repositório antes de distribuir ou instalar. Não informe tokens na conversa.
+Versão de avaliação: 1.0.0-rc.12. Node.js 24+, npm e Git. A licença ainda não foi decidida. Confira a visibilidade e as permissões do repositório antes de distribuir ou instalar. Não informe tokens na conversa.
 
 ## Pedido pronto para copiar
 
-> Instale o MCP App Memory deste repositório: https://github.com/vagenralexx/app-memory-toolkit . Leia INSTALL.md e use a versão v1.0.0-rc.11. Configure no agente que estou usando, para este projeto, preservando outros MCPs e regras. Guarde a ferramenta e a base de memória fora da pasta do app. Depois confira a conexão e inicie start_project com a pasta absoluta deste projeto. Se a sessão precisar recarregar, me diga o passo exato.
+> Instale o MCP App Memory deste repositório: https://github.com/vagenralexx/app-memory-toolkit . Leia INSTALL.md e use a versão v1.0.0-rc.12. Configure no agente que estou usando, para este projeto, preservando outros MCPs e regras. Guarde a ferramenta e a base de memória fora da pasta do app. Depois confira a conexão e inicie start_project com a pasta absoluta deste projeto. Se a sessão precisar recarregar, me diga o passo exato.
 
 O agente precisa executar comandos locais e editar a configuração do cliente. Os controles normais do cliente continuam valendo. A instalação não acontece só por citar o nome de um servidor ainda não instalado.
 
@@ -15,7 +15,7 @@ O agente precisa executar comandos locais e editar a configuração do cliente. 
 
 1. Identifique o cliente e a pasta absoluta do app a partir do contexto autorizado. Pergunte apenas se faltarem. Localize Node 24+, npm e Git. Escolha uma pasta estável para a ferramenta fora do app e uma base estável fora do repositório; todos os clientes que vão compartilhar memória devem usar essa mesma base.
 2. Clone pela autenticação GitHub já disponível (exemplo: `gh repo clone vagenralexx/app-memory-toolkit PASTA_DA_FERRAMENTA`). Em repositório privado, confirme acesso. Não tente contornar autenticação e não peça credenciais na conversa.
-3. Entre na pasta clonada, execute `git checkout v1.0.0-rc.11` e `npm ci --ignore-scripts`. Não use npx com o nome do pacote no registro: ele não foi publicado no npm.
+3. Entre na pasta clonada, execute `git checkout v1.0.0-rc.12` e `npm ci --ignore-scripts`. Não use npx com o nome do pacote no registro: ele não foi publicado no npm.
 4. Execute a prévia abaixo, substituindo caminhos e cliente. Depois aplique a instalação autorizada pelo usuário. Preserve os outros servidores e instruções.
 
 ```text
@@ -53,6 +53,6 @@ A ativação depende de o agente seguir as instruções e ter as ferramentas dis
 
 ## Atualizar uma instalação anterior
 
-Localize a pasta estável da ferramenta e a base já usadas na conexão. Preserve ambas. Na pasta da ferramenta, confira git status; não apague mudanças locais. Execute git fetch --tags, git checkout v1.0.0-rc.11 e npm ci --ignore-scripts. Reexecute setup com os mesmos caminhos de cliente/projeto/base; revise a prévia antes de aplicar. Recarregue a sessão e confira as 65 ferramentas e start_project.
+Localize a pasta estável da ferramenta e a base já usadas na conexão. Preserve ambas. Na pasta da ferramenta, confira git status; não apague mudanças locais. Execute git fetch --tags, git checkout v1.0.0-rc.12 e npm ci --ignore-scripts. Reexecute setup com os mesmos caminhos de cliente/projeto/base; revise a prévia antes de aplicar. Recarregue a sessão e confira as 65 ferramentas e start_project.
 
 A base continua no schema 3. A atualização do parser recompõe os símbolos derivados sem recriar chunks, vetores ou histórico canônico. Faça backup antes de atualizar uma base importante; não restaure uma cópia por cima da base em uso.

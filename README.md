@@ -1,6 +1,8 @@
-# App Memory Toolkit — 1.0.0-rc.11
+# App Memory Toolkit — 1.0.0-rc.12
 
 **Capacidades:** consulte a [matriz das 28 capacidades de referência](docs/CAPABILITIES.md) e os [novos contratos](docs/GAP-CLOSURE.md).
+
+**UI/UX complementar:** [direção, referências, captura, tokens e movimento](docs/DESIGN-WORKFLOW.md) na ferramenta de design existente, sem nova base ou instalação global.
 
 **Grafo de contexto:** [get_graph_context](docs/GRAPH.md) acrescenta caminhos direcionados, impacto transitivo, concentração, ciclos e snapshots/diff usando os índices existentes.
 
@@ -31,7 +33,7 @@ node src/cli.js wizard --data "D:\AppMemory\base"
 Para instalar o pacote distribuído em outra pasta/máquina com Node.js:
 
 ```powershell
-npm install --global "C:\caminho\app-memory-toolkit-1.0.0-rc.11.tgz" --ignore-scripts
+npm install --global "C:\caminho\app-memory-toolkit-1.0.0-rc.12.tgz" --ignore-scripts
 app-memory wizard --data "D:\AppMemory\base"
 ```
 

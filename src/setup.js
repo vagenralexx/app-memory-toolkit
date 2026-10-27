@@ -1,3 +1,4 @@
+import{DESIGN_WORKFLOW}from'./design-workflow.js';
 import {GRAPH_WORKFLOW} from './graph-core.js';
 import {FOUNDER_WORKFLOW} from './founder-core.js';
 import {ENGINEERING_SKILL} from './ponytail-workflow.js';
@@ -17,6 +18,7 @@ Consultar get_operating_rules e get_task_briefing; tarefas relevantes usam IDs e
 ${ENGINEERING_SKILL}
 ${FOUNDER_WORKFLOW}
 ${GRAPH_WORKFLOW}
+${DESIGN_WORKFLOW}
 Se o MCP não estiver disponível, informar que a sessão precisa recarregar a conexão; não fingir ter consultado as ferramentas.
 ${end}`;
 
