@@ -96,7 +96,7 @@ export class Store {
       PRAGMA user_version=3;
     `);
     this.transaction(() => {
-      const missing = this.db.prepare("SELECT * FROM records r WHERE status!='removed' AND NOT EXISTS(SELECT 1 FROM chunks c WHERE c.record_id=r.id)").all();
+      const missing = this.db.prepare("SELECT * FROM records r WHERE status!='removed' AND title!='continuity:v1' AND NOT EXISTS(SELECT 1 FROM chunks c WHERE c.record_id=r.id)").all();
       for (const row of missing) this.syncDerived(row);
       if(this.setting('code_parser_version')!==2){
         for(const row of this.db.prepare("SELECT * FROM records WHERE kind='code'").all())this.syncCode(row);
@@ -136,19 +136,21 @@ export class Store {
     if (!row) throw new Error('Referência não encontrada neste projeto.');
     return row;
   }
-  write({ projectId, id, kind, title, content, status = 'draft', expectedRevision, sourcePath = null, sourceHash = null }) {
+  write({ projectId, id, createId, kind, title, content, status = 'draft', expectedRevision, sourcePath = null, sourceHash = null }) {
     this.project(projectId);
     if (!kinds.has(kind)) throw new Error('Tipo de registro inválido.');
     if (!title?.trim() || !content?.trim()) throw new Error('Título e conteúdo são obrigatórios.');
     if (Buffer.byteLength(content) > 128_000) throw new Error('Registro maior que 128 KB.');
     assertSafeMemory(`${title}\n${content}`);
     return this.transaction(() => {
+      if(createId && (id || !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(createId) || this.db.prepare('SELECT id FROM records WHERE id=?').get(createId)))throw new Error('ID de criação inválido ou já utilizado.');
       const previous = id ? this.get(projectId, id) : null;
       if(previous?.parent_id)throw new Error('Referência de chunk não pode ser atualizada. Use parent_id para o registro canônico.');
       if (previous && previous.revision !== expectedRevision) throw new Error('Conflito de revisão. Releia o registro antes de atualizar.');
       if (previous?.kind === 'handoff') throw new Error('Handoffs são imutáveis. Crie um novo registro.');
+      if (previous?.title === 'continuity:v1') throw new Error('Eventos de continuidade são imutáveis. Crie um novo evento pelo adaptador.');
       if (previous?.source_path) throw new Error('Registro derivado do código: atualize por indexação.');
-      const recordId = previous?.id ?? randomUUID();
+      const recordId = previous?.id ?? createId ?? randomUUID();
       const revision = (previous?.revision ?? 0) + 1;
       this.db.prepare(`INSERT INTO records(id,project_id,kind,title,content,status,source_path,source_hash,revision,updated_at)
         VALUES(?,?,?,?,?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET
@@ -169,7 +171,7 @@ export class Store {
   syncDerived(row) {
     this.db.prepare('DELETE FROM chunks WHERE record_id=?').run(row.id);
     this.syncCode(row);
-    if (row.status === 'removed') return;
+    if (row.status === 'removed' || row.title === 'continuity:v1') return;
     const insert = this.db.prepare('INSERT INTO chunks VALUES(?,?,?,?,?,?,?,?,?,?,?)');
     for (const c of splitRecord(row)) insert.run(c.id,c.record_id,c.project_id,c.title,c.module,c.section,c.start_line,c.end_line,c.content,c.digest,c.document_status);
   }
@@ -237,7 +239,7 @@ export class Store {
     const expression = terms.map(term => `"${term}"`).join(' OR ');
     return this.db.prepare(`SELECT r.*,bm25(search,4.0,1.0) AS rank FROM search
       JOIN records r ON r.rowid=search.rowid WHERE search MATCH ? AND r.project_id=?
-      AND r.status!='removed' AND (? IS NULL OR r.kind=?) ORDER BY rank,r.id LIMIT ?`)
+      AND r.status!='removed' AND r.title!='continuity:v1' AND (? IS NULL OR r.kind=?) ORDER BY rank,r.id LIMIT ?`)
       .all(expression, projectId, kind ?? null, kind ?? null, limit);
   }
   metric(projectId, operation, text) {

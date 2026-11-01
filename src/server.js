@@ -1,3 +1,6 @@
+import {validateExecutionReceipts} from './continuity-runtime.js';
+import {projectContinuityBackend} from './continuity-context.js';
+import {registerContinuityTools} from './continuity-tools.js';
 import { McpServer } from '@modelcontextprotocol/server';
 import { serveStdio } from '@modelcontextprotocol/server/stdio';
 import * as z from 'zod/v4';
@@ -38,7 +41,7 @@ export function createServer(store) {
     if(CACHE_TOOLS.has(name))schema={...schema,cache_mode:z.enum(['full','reference']).default('full')};
     server.registerTool(name, {
       description, inputSchema: z.object(schema),
-      annotations: { readOnlyHint: readOnly, destructiveHint: name==='memory_delete', openWorldHint: name==='manage_graph_context' }
+      annotations: { readOnlyHint: readOnly, destructiveHint: name==='memory_delete', openWorldHint: name==='manage_graph_context'||name==='manage_continuity' }
     }, async args => {
       try {
         const hit=args.cache_mode==='reference'?responseCache.lookup(name,args):null;
@@ -50,6 +53,7 @@ export function createServer(store) {
       } catch (error) { return { ...json({ error: error.message }), isError: true }; }
     });
   }
+  registerContinuityTools(tool,store);
   tool('start_project', 'COMECE AQUI quando o usuário pedir para usar App Memory ou este MCP: inspeciona a raiz autorizada, identifica projeto novo/existente/cadastrado e retorna perguntas, organização de dados/regras e próximos passos. Não grava no app.', {root:z.string().min(1),task_id:z.string().uuid().optional()},true,args=>startProject(store,args));
   tool('project_prepare', 'Prévia da organização de conhecimento para app existente ou pasta com configuração de agentes. Adiciona somente arquivos ausentes após requisitos mínimos; preserva todos os existentes. Não cria banco do app.', {project_id:project,apply:z.boolean().default(false)},false,args=>prepareProject(store,args.project_id,args));
   tool('onboarding_questions', 'Questionário de requisitos. Não presume stack, plataforma nem estilo visual.', {}, true,
@@ -104,11 +108,14 @@ export function createServer(store) {
     ...recordFields, status: z.enum(['todo', 'in_progress', 'blocked', 'done']).default('todo'),
     acceptance: z.array(z.string().min(1)).min(1), evidence: z.array(z.string().min(1)).default([]),
     acceptance_met: z.boolean().default(false),
+    verification_receipts: z.array(z.string().uuid()).min(1).max(30).optional(),
     priority: z.enum(['P0', 'P1', 'P2', 'P3']).optional(), size: z.enum(['P', 'M', 'G']).optional(),
     recipe: z.string().max(4000).optional(), method: z.string().max(4000).optional(),
     target_paths: z.array(z.string()).optional(), consumers: z.array(z.string()).optional(),
     owner: z.string().max(120).optional(), depends_on: z.array(z.string().uuid()).max(100).optional()
-  }, false, args => store.transaction(() => {
+  }, false, async args => {
+    const verification=args.verification_receipts?await validateExecutionReceipts(projectContinuityBackend(store,args.project_id),args.verification_receipts):null;
+    return store.transaction(() => {
     if (args.status === 'done' && (!args.evidence.length || !args.acceptance_met)) throw new Error('Conclusão exige evidence e acceptance_met=true.');
     if (args.id && store.get(args.project_id, args.id).kind !== 'task') throw new Error('O ID não pertence a uma tarefa.');
     const previous = args.id ? JSON.parse(store.get(args.project_id, args.id).content) : {};
@@ -122,8 +129,8 @@ export function createServer(store) {
       if (args.status === 'done' && dependency.status !== 'done') throw new Error('Dependência ainda não concluída.');
     }
     return write(store, args, 'task', args.status, JSON.stringify({ description: args.content, acceptance: args.acceptance,
-      evidence: args.evidence, acceptance_met: args.acceptance_met, ...details }, null, 2));
-  }));
+      evidence: args.evidence, acceptance_met: args.acceptance_met, ...(verification?{verification}:{}), ...details }, null, 2));
+  });});
   tool('decision_record', 'Registra decisão com contexto. Não altera automaticamente requisitos nem decisões anteriores.', {
     ...recordFields, status: z.enum(['proposed', 'accepted', 'superseded']).default('proposed')
   }, false, args => write(store, args, 'decision', args.status));

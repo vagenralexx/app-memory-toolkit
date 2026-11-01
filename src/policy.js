@@ -1,3 +1,4 @@
+import {CONTINUITY_WORKFLOW} from './continuity-core.js';
 import{DESIGN_WORKFLOW}from'./design-workflow.js';
 import {GRAPH_WORKFLOW} from './graph-core.js';
 import {FOUNDER_WORKFLOW} from './founder-core.js';
@@ -6,6 +7,7 @@ import { pack } from './store.js';
 // Generalização das regras consultadas no MCP original; detalhes em docs/BASELINE.md.
 export const POLICY_VERSION = '2026-10-23.1';
 export const BASE_RULES = [
+  {id:'continuity',scope:'all',text:CONTINUITY_WORKFLOW},
   { id: 'context', scope: 'all', text: 'Identificar o projeto; consultar briefing, regras, tarefa e apenas fontes relevantes. Não carregar histórico inteiro no início.' },
   { id: 'evidence', scope: 'all', text: 'Citar arquivo:linha e revisão/hash quando disponíveis. Código observado não comprova execução. Planejado, hipótese, substituído e ausente não são capacidade existente.' },
   { id: 'backlog', scope: 'all', text: 'Usar task_list/task_update como backlog único. Buscar antes de criar; preservar prioridade, dependências, receita, método, local e consumidores. Atualizar com expected_revision.' },

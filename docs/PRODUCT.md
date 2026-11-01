@@ -1,4 +1,4 @@
-# Escopo da versão de avaliação 1.0.0-rc.12
+# Escopo da versão de avaliação 1.0.0-rc.13
 
 ## Objetivo e conclusão técnica
 
@@ -58,3 +58,7 @@ Há busca híbrida, grafo de relações explícitas, referências sintáticas e 
 Esta é uma candidata para testes locais, validada no Windows. A revisão manual dos fluxos em cada cliente, avaliações maiores por app e a decisão de licença/condições comerciais ficam para a etapa de avaliação do titular. Interface gráfica, runtime embutido, atualização automática e serviço multiusuário são expansões futuras, não pressupostos desta distribuição.
 
 O pacote fica `private` e `UNLICENSED` até a decisão do titular, sem publicação automática.
+
+## Continuidade e verificação rc.13
+
+Observações saneadas opt-in, ofertas/aceites explícitos, preferências confirmadas exportáveis/importáveis, briefing por cobertura e linha do tempo de ingestão reutilizam SQLite e histórico. Eventos técnicos têm canal de recall separado para preservar a busca geral. Compactação é uma projeção reversível; não remove o original. Executor local opcional exige habilitação e perfil fixo fora da árvore avaliada, com checker fixado por hash. Recibos executados têm assinatura local, escopo/fingerprint e checagem de atualidade; relato continua relato. Detalhes e limites em CONTINUITY.md. Nenhum hook/serviço é instalado ou iniciado automaticamente.

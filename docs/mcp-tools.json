@@ -1,6 +1,213 @@
 {
-  "version": "1.0.0-rc.12",
+  "version": "1.0.0-rc.13",
   "tools": [
+    {
+      "name": "manage_continuity",
+      "description": "Captura opt-in saneada, replay limitado, ofertas explícitas, preferências confirmadas, compactação reversível e recibos. Sem novo banco/backlog/hooks globais; verify exige perfil confiável habilitado pelo host.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "configure",
+              "observe",
+              "drain",
+              "offer",
+              "accept",
+              "preference",
+              "import_preferences",
+              "compact",
+              "restore",
+              "receipt",
+              "verify"
+            ]
+          },
+          "config": {
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {}
+          },
+          "observation": {
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {}
+          },
+          "offer": {
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {}
+          },
+          "preference": {
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {}
+          },
+          "preferences": {
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {}
+          },
+          "receipt": {
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {}
+          },
+          "handoff_id": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "session_id": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "target_id": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "expected_digest": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "expected_state": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 160
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "profile": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "queue_on_failure": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "project_id",
+          "action"
+        ],
+        "$schema": "https://json-schema.org/draft/2020-12/schema"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "get_continuity_context",
+      "description": "Status, briefing por cobertura, recall, timeline de ingestão, retenção proposta, exportação, fidelidade, baseline, edições e recibos atuais. Resultados e identidade declarados distinguem-se de execução local.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "mode": {
+            "default": "status",
+            "type": "string",
+            "enum": [
+              "status",
+              "brief",
+              "recall",
+              "timeline",
+              "maintenance",
+              "export",
+              "fidelity",
+              "performance",
+              "edits",
+              "receipts",
+              "profile"
+            ]
+          },
+          "query": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "session_id": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "task_id": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "id": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "as_of": {
+            "type": "string",
+            "maxLength": 40
+          },
+          "profile": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "budget_bytes": {
+            "type": "integer",
+            "minimum": 500,
+            "maximum": 50000
+          },
+          "older_than_days": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 3650
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "offset": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000
+          },
+          "input": {
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {}
+          }
+        },
+        "required": [
+          "project_id"
+        ],
+        "$schema": "https://json-schema.org/draft/2020-12/schema"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      }
+    },
     {
       "name": "start_project",
       "description": "COMECE AQUI quando o usuário pedir para usar App Memory ou este MCP: inspeciona a raiz autorizada, identifica projeto novo/existente/cadastrado e retorna perguntas, organização de dados/regras e próximos passos. Não grava no app.",
@@ -486,6 +693,16 @@
           "acceptance_met": {
             "default": false,
             "type": "boolean"
+          },
+          "verification_receipts": {
+            "minItems": 1,
+            "maxItems": 30,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            }
           },
           "priority": {
             "type": "string",

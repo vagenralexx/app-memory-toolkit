@@ -1,5 +1,12 @@
 # Histórico
 
+## 1.0.0-rc.13 — 01/11/2026
+
+- Duas ferramentas complementares: manage_continuity/get_continuity_context, com memória canônica e quatro módulos compartilhados reproduzíveis.
+- Captura opt-in, fila saneada limitada, replay idempotente, ofertas e aceites explícitos, preferências portáveis, timeline/export e compactação reversível.
+- Verificador opcional por perfil confiável do host, recibo assinado e invalidado por fontes/checker modificados; task_update pode exigir recibos explícitos sem alterar o fluxo anterior.
+- Fidelidade literal por etapa, comparação declarada de baseline e diagnósticos de edições; sem ativação de clientes, escolha de licença ou publicação automática.
+
 ## 1.0.0-rc.12
 
 - Amplia get_design_guidance com11 modos complementares de UI/UX: direção page/app,68 links de referência, captura por host, normalização TypeUI, movimento contextual, revisão e proposta DESIGN.md/tokens.
