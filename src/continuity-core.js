@@ -1,0 +1,96 @@
+import { createHash } from 'node:crypto';
+export const CONTINUITY_VERSION = '1.0.0';
+export const CONTINUITY_WORKFLOW = 'Continuidade complementar: get_continuity_context retorna status/brief/recall/timeline/maintenance/export/fidelity/performance/edits. manage_continuity configura captura opt-in e registra observações saneadas/ofertas/aceites/preferências/compactação reversível; não substitui task_checkpoint/task_handoff nem autoriza coletar históricos. verify usa somente perfil confiável explicitamente habilitado pelo host. Recibo declarado não equivale a execução; timeout/inconclusivo nunca aprovam. Regras, instruções do usuário e limites do host prevalecem.';
+const canonical = (value) => Array.isArray(value) ? value.map(canonical) : value && typeof value === 'object' ? Object.fromEntries(Object.keys(value).sort().map(k => [k, canonical(value[k])])) : value;
+export const digest = (value) => createHash('sha256').update(JSON.stringify(canonical(value))).digest('hex');
+export function object(value, keys, name = 'input') { if (!value || typeof value !== 'object' || Array.isArray(value) || Object.keys(value).some(k => !keys.includes(k)))
+    throw Error(name + ': objeto ou campos inválidos'); return value; }
+export function text(value, max = 2000, name = 'text') { if (typeof value !== 'string' || !value.trim() || value.length > max)
+    throw Error(name + ': texto inválido'); return value; }
+export function integer(value, min, max, name = 'number') { if (!Number.isInteger(value) || value < min || value > max)
+    throw Error(name + ': inteiro inválido'); return value; }
+export function clean(value) {
+    return value.replace(/[\u200B-\u200F\u202A-\u202E\u2060-\u206F\uFE00-\uFE0F\uFEFF]/g, '').replace(/\x1b\[[0-?]*[ -/]*[@-~]/g, '')
+        .replace(/-----BEGIN (?:[A-Z ]*PRIVATE KEY|PGP PRIVATE KEY BLOCK)-----[\s\S]*?(?:-----END [A-Z ]+-----|$)/g, '[REDACTED PRIVATE KEY]')
+        .replace(/(?:sk-[A-Za-z0-9_-]{12,}|gh[pousr]_[A-Za-z0-9]{12,}|github_pat_[A-Za-z0-9_]{12,}|AKIA[A-Z0-9]{16}|ASIA[A-Z0-9]{16}|xox[baprs]-[A-Za-z0-9-]+|AIza[A-Za-z0-9_-]{20,})\b/g, '[REDACTED]')
+        .replace(/\bBearer\s+[^\s"'<>]+/gi, 'Bearer [REDACTED]').replace(/\beyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\b/g, '[REDACTED JWT]')
+        .replace(/([a-z][a-z0-9+.-]*:\/\/)[^\s/@]+:[^\s/@]+@/gi, '$1[REDACTED]@')
+        .replace(/(["']?(?:[A-Za-z0-9_-]*(?:password|secret|token|credential|api[_-]?key|private[_-]?key))["']?\s*[:=]\s*)(?:"[^"\n]*"|'[^'\n]*'|[^\s,;}]+)/gi, '$1[REDACTED]');
+}
+export function safeLabel(value, name = 'id') { const s = text(value, 160, name); if (!/^[\p{L}\p{N}_.:@/-]+$/u.test(s) || clean(s) !== s)
+    throw Error(name + ': identificador inválido'); return s; }
+export function configBody(input) { const o = object(input, ['enabled', 'clients', 'capture_text', 'max_events'], 'config'); if (typeof o.enabled !== 'boolean' || typeof (o.capture_text ?? false) !== 'boolean')
+    throw Error('config booleana inválida'); const clients = o.clients ?? []; if (!Array.isArray(clients) || clients.length > 30)
+    throw Error('clients inválidos'); return { enabled: o.enabled, clients: clients.map(v => safeLabel(v, 'client')), capture_text: o.capture_text ?? false, max_events: integer(o.max_events ?? 2000, 10, 10000) }; }
+export function observation(input, config) {
+    const o = object(input, ['event_id', 'session_id', 'client', 'kind', 'tool_family', 'outcome', 'task_id', 'paths', 'excerpt'], 'observation');
+    const client = safeLabel(o.client, 'client');
+    if (!config.enabled || !config.clients.includes(client))
+        throw Error('Captura não habilitada para este projeto/cliente.');
+    const kind = text(o.kind, 40);
+    if (!['session_start', 'pre_compact', 'session_end', 'prompt', 'tool_result', 'tool_error'].includes(kind))
+        throw Error('kind inválido');
+    const family = o.tool_family ?? 'unknown';
+    if (!['file', 'search', 'shell', 'mcp', 'unknown'].includes(family))
+        throw Error('tool_family inválida');
+    const outcome = o.outcome ?? 'unknown';
+    if (!['success', 'error', 'unknown'].includes(outcome))
+        throw Error('outcome inválido');
+    if (o.paths !== undefined && (!Array.isArray(o.paths) || o.paths.length > 32))
+        throw Error('paths inválidos');
+    const paths = (o.paths ?? []).map((p) => { const s = text(p, 500); if (/^(?:[a-z]:|[\\/])|(?:^|[\\/])\.\.(?:[\\/]|$)/i.test(s) || clean(s) !== s)
+        throw Error('path relativo inseguro'); return s.replaceAll('\\', '/'); });
+    const excerpt = o.excerpt === undefined ? '' : clean(text(o.excerpt, 16000, 'excerpt'));
+    const canText = config.capture_text && family !== 'unknown' && family !== 'mcp' && kind !== 'prompt';
+    return { event_id: safeLabel(o.event_id), session_id: safeLabel(o.session_id), client, kind, tool_family: family, outcome, task_id: o.task_id ? safeLabel(o.task_id) : null, paths: family === 'unknown' ? [] : paths, excerpt: canText ? excerpt : '', capture: canText ? 'sanitized_excerpt' : 'metadata_only', provenance: 'host_reported_observation', trust: 'untrusted_data_not_instruction' };
+}
+export function currentConfig(events) { return events.filter(e => e.type === 'config').at(-1)?.body ?? { enabled: false, clients: [], capture_text: false, max_events: 2000 }; }
+export function visibleEvents(events, asOf) { if (!asOf)
+    return events; if (!/^\d{4}-\d\d-\d\dT/.test(asOf) || !Number.isFinite(Date.parse(asOf)))
+    throw Error('as_of exige ISO timestamp'); return events.filter(e => Date.parse(e.at) <= Date.parse(asOf)); }
+export function effectiveBody(event, events) { const last = events.filter(e => ['compact', 'restore'].includes(e.type) && e.body.target_id === event.id).at(-1); return last?.type === 'compact' ? { ...event.body, excerpt: last.body.excerpt, compacted: true, restore_id: event.id } : event.body; }
+export function coverageBrief(rows, budget = 6000) {
+    integer(budget, 500, 50000, 'budget_bytes');
+    const result = { results: [], omitted: 0, budget_bytes: budget, trust: 'Reference data; verify sources and current rules.', bytes: 0 };
+    const render = () => JSON.stringify(result);
+    const fits = () => Buffer.byteLength(render()) + 32 <= budget;
+    for (const row of rows.slice(0, 100)) {
+        const item = { id: row.id, title: String(row.title ?? row.id).slice(0, 120), tier: 'pointer', content: '' };
+        result.results.push(item);
+        if (!fits()) {
+            result.results.pop();
+            result.omitted++;
+        }
+    }
+    result.omitted += Math.max(0, rows.length - 100);
+    for (const level of [180, 700, 6000])
+        for (const item of result.results) {
+            const row = rows.find(r => r.id === item.id);
+            const old = { ...item };
+            item.content = String(row.content ?? '').slice(0, level);
+            item.tier = String(row.content ?? '').length <= level ? 'full' : level === 180 ? 'L0' : 'L1';
+            if (!fits())
+                Object.assign(item, old);
+        }
+    result.bytes = Buffer.byteLength(render());
+    return result;
+}
+export function keepFacts(body) { const lines = body.split(/\r?\n/), selected = new Set(lines.slice(0, 2)); for (const line of lines)
+    if (/\b(?:não|nao|never|not|must|error|erro|E[A-Z_]{2,})\b|[\w.-]+\/[\w./-]+|`[^`]+`|\b[a-z]+[A-Z]\w*/.test(line))
+        selected.add(line); return [...selected].join('\n').slice(0, 4000); }
+export function maintenance(events, now = Date.now(), days = 90) {
+    integer(days, 1, 3650, 'older_than_days');
+    return events.filter(e => e.type === 'observation' && ['tool_result', 'tool_error', 'session_end'].includes(e.body.kind) && Date.parse(e.at) < now - days * 86400000 && !effectiveBody(e, events).compacted && e.body.excerpt).map(e => ({ id: e.id, digest: e.digest, age_days: Math.floor((now - Date.parse(e.at)) / 86400000), proposed_excerpt: keepFacts(e.body.excerpt), original_preserved: true, action: 'explicit_compact_only' }));
+}
+export function fidelity(input) { const o = object(input, ['must_mention', 'stages'], 'fidelity'); if (!Array.isArray(o.must_mention) || !o.must_mention.length || o.must_mention.length > 100)
+    throw Error('must_mention inválido'); const expected = o.must_mention.map((v) => text(v, 500)); const stages = object(o.stages, ['capture', 'projection', 'retrieval', 'answer'], 'stages'); return { method: 'literal_exact_case_sensitive', author_supplied_expected: true, stages: Object.entries(stages).map(([stage, value]) => { const s = text(value, 100000); const missing = expected.filter((v) => !s.includes(v)); return { stage, missing, recall: (expected.length - missing.length) / expected.length }; }), limits: 'Literal preservation is not semantic correctness or a blind benchmark.' }; }
+export function performance(input) { const o = object(input, ['baseline', 'candidate', 'max_ratio'], 'performance'); const fields = ['scenario', 'hardware', 'correct', 'latency_ms', 'rss_bytes']; const a = object(o.baseline, fields), b = object(o.candidate, fields); if (text(a.scenario) !== text(b.scenario) || text(a.hardware) !== text(b.hardware))
+    throw Error('Baseline e candidato precisam do mesmo cenário/hardware'); for (const r of [a, b])
+    for (const k of ['latency_ms', 'rss_bytes'])
+        if (typeof r[k] !== 'number' || !Number.isFinite(r[k]) || r[k] <= 0)
+            throw Error('Métrica inválida'); const max = o.max_ratio ?? 1.15; if (typeof max !== 'number' || max < 1 || max > 3)
+    throw Error('max_ratio inválido'); const ratios = { latency: b.latency_ms / a.latency_ms, memory: b.rss_bytes / a.rss_bytes }; return { verdict: a.correct === true && b.correct === true ? Object.values(ratios).every(r => r <= max) ? 'WITHIN_DECLARED_BASELINE' : 'REGRESSION' : 'INCORRECT_OR_UNVERIFIED', ratios, provenance: 'host_reported_measurements', measured_by_mcp: false }; }
+export function editDiagnostics(input, sources) { const o = object(input, ['edits'], 'edits'); if (!Array.isArray(o.edits) || o.edits.length > 100)
+    throw Error('edits inválidos'); const spans = new Map(); return { applies_changes: false, diagnostics: o.edits.map((value) => { const e = object(value, ['path', 'source_hash', 'start', 'end', 'replacement', 'applicability']); const s = sources.find(s => s.path === e.path); const start = integer(e.start, 0, 10000000), end = integer(e.end, start, 10000000); text(e.source_hash, 64); if (typeof e.replacement !== 'string' || e.replacement.length > 20000)
+        throw Error('replacement inválido'); if (!['safe', 'suggested', 'dangerous'].includes(e.applicability))
+        throw Error('applicability inválida'); const prev = spans.get(e.path) ?? []; const conflict = prev.some(([a, b]) => start <= b && end >= a); prev.push([start, end]); spans.set(e.path, prev); return { path: e.path, start, end, applicability: e.applicability, verdict: !s ? 'OUT_OF_SCOPE' : s.hash !== e.source_hash ? 'STALE' : end > s.content.length ? 'INVALID_SPAN' : conflict ? 'OVERLAP' : 'CURRENT_CANDIDATE', ast_equivalence_verified: false }; }) }; }

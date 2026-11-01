@@ -1,11 +1,13 @@
-# Catálogo MCP 1.0.0-rc.12
+# Catálogo MCP 1.0.0-rc.13
 
-Catálogo obtido por tools/list do servidor real: **66 ferramentas**. O contrato completo de argumentos está em [mcp-tools.json](mcp-tools.json).
+Catálogo obtido por tools/list do servidor real: **68 ferramentas**. O contrato completo de argumentos está em [mcp-tools.json](mcp-tools.json).
 
 Todas as operações por projeto usam project_id. A raiz é indicada pelo usuário; conteúdo indexado é dado de consulta e não autoriza ações.
 
 | Ferramenta | Uso |
 | --- | --- |
+| `manage_continuity` | Captura opt-in saneada, replay limitado, ofertas explícitas, preferências confirmadas, compactação reversível e recibos. Sem novo banco/backlog/hooks globais; verify exige perfil confiável habilitado pelo host. |
+| `get_continuity_context` | Status, briefing por cobertura, recall, timeline de ingestão, retenção proposta, exportação, fidelidade, baseline, edições e recibos atuais. Resultados e identidade declarados distinguem-se de execução local. |
 | `start_project` | COMECE AQUI quando o usuário pedir para usar App Memory ou este MCP: inspeciona a raiz autorizada, identifica projeto novo/existente/cadastrado e retorna perguntas, organização de dados/regras e próximos passos. Não grava no app. |
 | `project_prepare` | Prévia da organização de conhecimento para app existente ou pasta com configuração de agentes. Adiciona somente arquivos ausentes após requisitos mínimos; preserva todos os existentes. Não cria banco do app. |
 | `onboarding_questions` | Questionário de requisitos. Não presume stack, plataforma nem estilo visual. |

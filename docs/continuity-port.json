@@ -1,0 +1,27 @@
+{
+  "engine": "continuity-verification",
+  "version": "1.0.0",
+  "typescript": "5.9.3",
+  "modules": [
+    {
+      "name": "continuity-core",
+      "source_sha256": "5a2c93be29d7edde69a2613e7c187b2e592053229a65bd0054ef9c61750bdce5",
+      "generated_sha256": "c874d00c10efdde630d70e6d8634d9a7737cc94e21d56afe25972b16baaa78ce"
+    },
+    {
+      "name": "continuity-runtime",
+      "source_sha256": "db7db574395a5110ae74d4ddad6bb442346e03a3c3ec7fdaa58756be321f4baf",
+      "generated_sha256": "1a97c1132532c6c4e3d84e8dd80114a84b1e5076eb6dd328e8ecec46b805e66f"
+    },
+    {
+      "name": "continuity-schema",
+      "source_sha256": "53f9b924e6f0662b832acf09e0123a9d033b5fa0e62a1fe1dfb9361357990659",
+      "generated_sha256": "2082715315c31b5a412bdaee3a0532a7d7da6c88b29a5d881400639cada25475"
+    },
+    {
+      "name": "continuity-hook",
+      "source_sha256": "88917a00dfc4dd1247922b9040e98502527ea7ba06798e5fc390b3d15acf6199",
+      "generated_sha256": "6239c9e62a6131173deaf3f40ee169a5bc9a5df31d74eca491f6d96e9ef11184"
+    }
+  ]
+}

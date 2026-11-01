@@ -19,7 +19,7 @@ function within(root, target) {
   return rel === '' || (!rel.startsWith(`..`) && !isAbsolute(rel));
 }
 
-export async function scanProject(root, dataDirectory,{artifacts:requestedArtifacts=[]}={}) {
+export async function scanProject(root, dataDirectory,{artifacts:requestedArtifacts=[],paths:requestedPaths}={}) {
   const canonical = await realpath(root);
   const sources = [];
   const artifacts=[];
@@ -53,6 +53,7 @@ export async function scanProject(root, dataDirectory,{artifacts:requestedArtifa
       if (++visited > 30_000 || sources.length >= MAX_FILES || bytes >= MAX_TOTAL_BYTES) { complete = false; return; }
       const path = join(directory, entry.name);
       const rel = relative(canonical, path).replaceAll('\\', '/');
+      if(requestedPaths?.length&&!requestedPaths.some(p=>rel===p||rel.startsWith(p+'/')||(entry.isDirectory()&&p.startsWith(rel+'/'))))continue;
       if (entry.isSymbolicLink()) { skip('symlink'); continue; }
       if (excluded.has(entry.name) || denied.test(entry.name)) { skip('excluded_name'); continue; }
       if (dataDirectory && within(resolve(dataDirectory), resolve(path))) { skip('memory_directory'); continue; }
