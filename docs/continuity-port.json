@@ -5,17 +5,17 @@
   "modules": [
     {
       "name": "continuity-core",
-      "source_sha256": "5a2c93be29d7edde69a2613e7c187b2e592053229a65bd0054ef9c61750bdce5",
+      "source_sha256": "95b697ad44eef06fec66ec9c3b04092b2d3658af891d874572653b5a94d89188",
       "generated_sha256": "c874d00c10efdde630d70e6d8634d9a7737cc94e21d56afe25972b16baaa78ce"
     },
     {
       "name": "continuity-runtime",
-      "source_sha256": "db7db574395a5110ae74d4ddad6bb442346e03a3c3ec7fdaa58756be321f4baf",
+      "source_sha256": "4a3b8bb93faea43787b20826cc182745a5ebce88df7b348b3c137153fa815551",
       "generated_sha256": "1a97c1132532c6c4e3d84e8dd80114a84b1e5076eb6dd328e8ecec46b805e66f"
     },
     {
       "name": "continuity-schema",
-      "source_sha256": "53f9b924e6f0662b832acf09e0123a9d033b5fa0e62a1fe1dfb9361357990659",
+      "source_sha256": "2b4ab55348c645cf5aea0bc063c104ef29596262534dc8e8e009811e636d1f23",
       "generated_sha256": "2082715315c31b5a412bdaee3a0532a7d7da6c88b29a5d881400639cada25475"
     },
     {
